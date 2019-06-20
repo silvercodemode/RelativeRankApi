@@ -72,5 +72,32 @@ namespace RelativeRankTests
                 Assert.Equal(show.Name, $"{show.Rank - 2}");
             }
         }
+
+        [Fact]
+        public void AddingShowWithRankEqualToNumberOfShowsInListShouldLeaveEachShowInListsRankUnchanged()
+        {
+            var showList = new RankedShowList();
+            var rankedShows = new List<RankedShow>();
+
+            var numberOfShowsToTest = 3;
+            for (var i = 0; i < numberOfShowsToTest; i++)
+            {
+                showList.Add(new RankedShow() { Name = $"{i}" });
+                rankedShows.Add(showList[i]);
+            }
+
+            var startingRanks = new List<short>();
+            foreach (var show in rankedShows)
+            {
+                startingRanks.Add(show.Rank);
+            }
+
+            showList.Add(new RankedShow() { Rank = (short) numberOfShowsToTest });
+
+            for (var i = 0; i < numberOfShowsToTest; i++)
+            {
+                Assert.Equal(startingRanks[i], showList[i].Rank);
+            }
+        }
     }
 }
