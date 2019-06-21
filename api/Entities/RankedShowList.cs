@@ -24,7 +24,7 @@ namespace RelativeRank.Entities
 
         public void Add(RankedShow show)
         {
-            if (show.Rank <= 0)
+            if (show.Rank <= 0 || show.Rank > _backingList.Count)
             {
                 show.Rank = (short)(_backingList.Count + 1);
                 _backingList.Add(show);

@@ -99,5 +99,24 @@ namespace RelativeRankTests
                 Assert.Equal(startingRanks[i], showList[i].Rank);
             }
         }
+
+        [Fact]
+        public void AddingShowWithRankHigherThanShowsInListShouldChangeShowsRankToEqualShowsInList()
+        {
+            var showList = new RankedShowList();
+
+            var showsInList = 3;
+            for (var i = 0; i < showsInList; i++)
+            {
+                showList.Add(new RankedShow());
+            }
+
+            Assert.Equal(showsInList, showList.ShowsInList);
+
+            var showWithRank100 = new RankedShow() { Rank = 100 };
+            showList.Add(showWithRank100);
+
+            Assert.Equal(showList.ShowsInList, showWithRank100.Rank);
+        }
     }
 }
