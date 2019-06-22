@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace RelativeRank.Models
+﻿namespace RelativeRank.EntityFrameworkEntities
 {
     public partial class UserToShowMapping
     {

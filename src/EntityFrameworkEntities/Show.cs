@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RelativeRank.Models
+namespace RelativeRank.EntityFrameworkEntities
 {
-    public partial class User
+    public partial class Show
     {
-        public User()
+        public Show()
         {
             UserToShowMapping = new HashSet<UserToShowMapping>();
         }
 
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string Name { get; set; }
 
         public ICollection<UserToShowMapping> UserToShowMapping { get; set; }
     }

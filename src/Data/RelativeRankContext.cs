@@ -1,8 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.Extensions.Configuration;
-using RelativeRank.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using RelativeRank.EntityFrameworkEntities;
 
 namespace RelativeRank.Data
 {

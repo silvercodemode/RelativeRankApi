@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\api\RelativeRank.csproj" />
+    <ProjectReference Include="..\src\RelativeRank.csproj" />
   </ItemGroup>
 
 </Project>

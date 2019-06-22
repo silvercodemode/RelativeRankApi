@@ -1,8 +1,6 @@
-﻿using RelativeRank.Models;
-using System;
+﻿using RelativeRank.EntityFrameworkEntities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using RelativeRank.Entities;
 
 namespace RelativeRank.Interfaces
 {

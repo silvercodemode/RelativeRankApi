@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RelativeRank.Data;
-using RelativeRank.Models;
+using RelativeRank.EntityFrameworkEntities;
 using RelativeRank.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using RelativeRank.Entities;
 
 namespace RelativeRank.Data
 {

@@ -1,4 +1,5 @@
-﻿using RelativeRank.Models;
+﻿using RelativeRank.EntityFrameworkEntities;
+using RelativeRank.Entities;
 using RelativeRank.Interfaces;
 using System;
 using System.Collections.Generic;

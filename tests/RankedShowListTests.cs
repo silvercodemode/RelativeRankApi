@@ -1,6 +1,5 @@
 using Xunit;
 using RelativeRank.Entities;
-using RelativeRank.Models;
 using System.Collections.Generic;
 
 namespace RelativeRankTests
