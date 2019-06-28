@@ -117,5 +117,22 @@ namespace RelativeRankTests
 
             Assert.Equal(showList.ShowsInList, showWithRank100.Rank);
         }
+
+        [Fact]
+        public void GetPercentileRankAtIndexMethodShouldCorrectlyCalculateThePercentileRankOfEachShow()
+        {
+            var showList = new RankedShowList();
+
+            var showsInList = 3;
+            for (var i = 0; i < showsInList; i++)
+            {
+                showList.Add(new RankedShow());
+            }
+
+            for (var i = 0; i < showsInList; i++)
+            {
+                Assert.Equal(1 - (1 / (showsInList + 1)) * (i + 1), showList.GetPercentileRankAtIndex(i));
+            }
+        }
     }
 }
