@@ -5,26 +5,13 @@ namespace RelativeRank.Data
 {
     public partial class RelativeRankContext : DbContext
     {
-        public RelativeRankContext()
-        {
-        }
-
-        public RelativeRankContext(DbContextOptions<RelativeRankContext> options)
-            : base(options)
+        public RelativeRankContext(DbContextOptions<RelativeRankContext> options) : base(options)
         {
         }
 
         public virtual DbSet<Show> Show { get; set; }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserToShowMapping> UserToShowMapping { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(@"Server=MP7373\SQLEXPRESS;Database=RelativeRank;Trusted_Connection=True;");
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

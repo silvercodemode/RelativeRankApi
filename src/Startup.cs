@@ -29,6 +29,9 @@ namespace RelativeRank
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddDbContext<RelativeRankContext>(options => {
+                options.UseSqlServer(Configuration.GetConnectionString("LocalDB"));
+            });
             services.AddScoped(typeof(IRelativeRankRepository), typeof(EfSqlServerRepository));
         }
 

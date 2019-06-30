@@ -13,7 +13,9 @@ namespace RelativeRank.Data
     public class EfSqlServerRepository : IRelativeRankRepository
     {
         private readonly RelativeRankContext _context;
-        public EfSqlServerRepository() =>_context = new RelativeRankContext();
+
+        public EfSqlServerRepository(RelativeRankContext context) =>_context = context;
+
         public void AddShow(Show show)
         {
             throw new NotImplementedException();

@@ -44,5 +44,10 @@ namespace RelativeRank.Entities
             }
 
         }
+
+        public double GetPercentileRankAtIndex(int index)
+        {
+            return 1 - (1 / (_backingList.Count + 1)) * (index + 1);
+        }
     }
 }
