@@ -9,5 +9,6 @@ namespace RelativeRank.Entities
     {
         public string Name { get; set; }
         public short Rank { get; set; }
+        public double PercentileRank{ get; set; }
     }
 }

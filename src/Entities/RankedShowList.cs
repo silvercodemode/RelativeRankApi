@@ -32,6 +32,7 @@ namespace RelativeRank.Entities
             else
             {
                 _backingList.Add(show);
+
                 var index = _backingList.Count - 2;
                 while (index >= 0 && _backingList[index].Rank >= show.Rank)
                 {
@@ -43,11 +44,15 @@ namespace RelativeRank.Entities
                 _backingList[index + 1] = show;
             }
 
+            foreach (var showToUpdatePercentileRank in _backingList)
+            {
+                showToUpdatePercentileRank.PercentileRank = GetPercentileRankAtIndex(showToUpdatePercentileRank.Rank - 1);
+            }
         }
 
         public double GetPercentileRankAtIndex(int index)
         {
-            return 1 - (1 / (_backingList.Count + 1)) * (index + 1);
+            return 1 - (1 / ((double) (_backingList.Count + 1))) * (index + 1);
         }
     }
 }
