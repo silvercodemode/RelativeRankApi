@@ -6,12 +6,12 @@ namespace RelativeRank.Interfaces
 {
     public interface IRelativeRankRepository
     {
-        List<Show> GetAllShows();
-        void AddShow(Show show);
-        void RemoveShow(Show show);
-        List<RankedShow> GetUsersShows(string username);
-        void AddShowToUsersShows(string username, RankedShow show);
-        void UpdateUsersShowRank(string username, RankedShow show, short newRank);
-        void RemoveUsersShow(string username, RankedShow show);
+        List<RankedShow> GetAllShows();
+        bool SignUp(string username, string password);
+        string Login(string username, string password);
+        void AddShow(Show show, string adminPassword);
+        void RemoveShow(Show show, string adminPassword);
+        RankedShowList GetUsersShows(string username);
+        void UpdateUsersShows(string username, string password, RankedShowList updatedList);
     }
 }
