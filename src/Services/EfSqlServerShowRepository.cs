@@ -6,11 +6,11 @@ using RelativeRank.Entities;
 
 namespace RelativeRank.Services
 {
-    public class EfSqlServerRepository : IShowRepository
+    public class EfSqlServerShowRepository : IShowRepository
     {
         private readonly RelativeRankContext _context;
 
-        public EfSqlServerRepository(RelativeRankContext context) => _context = context;
+        public EfSqlServerShowRepository(RelativeRankContext context) => _context = context;
 
         public void AddShow(RankedShow show)
         {

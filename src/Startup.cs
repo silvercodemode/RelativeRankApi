@@ -32,7 +32,7 @@ namespace RelativeRank
             services.AddDbContext<RelativeRankContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("LocalDB"));
             });
-            services.AddScoped(typeof(IShowRepository), typeof(EfSqlServerRepository));
+            services.AddScoped(typeof(IShowRepository), typeof(EfSqlServerShowRepository));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
