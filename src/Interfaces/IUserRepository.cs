@@ -1,10 +1,12 @@
 ﻿using RelativeRank.Entities;
-using System.Collections.Generic;
 
 namespace RelativeRank.Interfaces
 {
-    interface IUserRepository
+    public interface IUserRepository
     {
-        List<User> GetUsers();
+        User Login(string username, string password);
+        User SignUp(string username, string password);
+        RankedShowList GetUsersShows(string username);
+        void UpdateUsersShows(string username, RankedShowList updatedList);
     }
 }

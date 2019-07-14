@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
-using RelativeRank.Data;
+using RelativeRank.Services;
 using RelativeRank.Interfaces;
 
 namespace RelativeRank
@@ -32,7 +32,7 @@ namespace RelativeRank
             services.AddDbContext<RelativeRankContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("LocalDB"));
             });
-            services.AddScoped(typeof(IRelativeRankRepository), typeof(EfSqlServerRepository));
+            services.AddScoped(typeof(IShowRepository), typeof(EfSqlServerRepository));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

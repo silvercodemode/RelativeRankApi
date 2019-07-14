@@ -8,39 +8,39 @@ using System.Threading.Tasks;
 
 namespace RelativeRank.Tests
 {
-    public class TestRepository : IRelativeRankRepository
+    public class TestRepository : IShowRepository
     {
-        public void AddShow(Show show)
+        public void AddShow(RankedShow show)
         {
             throw new NotImplementedException();
         }
 
-        public void AddShowToUsersShows(string username, RankedShow show)
+        public List<RankedShow> GetAllShows()
         {
             throw new NotImplementedException();
         }
 
-        public List<Show> GetAllShows()
+        public RankedShowList GetUsersShows(string username)
         {
             throw new NotImplementedException();
         }
 
-        public List<RankedShow> GetUsersShows(string username)
+        public string Login(string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveShow(Show show)
+        public void RemoveShow(RankedShow show)
         {
             throw new NotImplementedException();
         }
 
-        public void RemoveUsersShow(string username, RankedShow show)
+        public bool SignUp(string username, string password)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateUsersShowRank(string username, RankedShow show, short newRank)
+        public void UpdateUsersShows(string username, RankedShowList updatedList)
         {
             throw new NotImplementedException();
         }
