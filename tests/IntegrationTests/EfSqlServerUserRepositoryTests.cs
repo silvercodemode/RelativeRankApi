@@ -52,6 +52,7 @@ namespace RelativeRankTests.IntegrationTests
             var user = repository.Login(username, password);
 
             Assert.NotNull(user);
+            Assert.NotNull(user.Token);
             Assert.IsType<string>(user.Token);
         }
     }
