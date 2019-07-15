@@ -2,7 +2,7 @@ using Xunit;
 using RelativeRank.Entities;
 using System.Collections.Generic;
 
-namespace RelativeRankTests
+namespace RelativeRankTests.UnitTests
 {
     public class RankedShowListTests
     {

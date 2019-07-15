@@ -1,17 +1,8 @@
-﻿using RelativeRank.Services;
-using RelativeRank.Entities;
+﻿using RelativeRank.Entities;
 using RelativeRank.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Options;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 
 namespace RelativeRank.Services
 {
@@ -19,59 +10,32 @@ namespace RelativeRank.Services
     {
         private readonly RelativeRankContext _context;
         private readonly AppSettings _appSettings;
+        private readonly IAuthenticationService _authenticationService;
 
-        public EfSqlServerUserRepository(RelativeRankContext context, IOptions<AppSettings> appSettings)
+        public EfSqlServerUserRepository(RelativeRankContext context, IOptions<AppSettings> appSettings, IAuthenticationService authenticationService)
         {
             _context = context;
             _appSettings = appSettings.Value;
+            _authenticationService = authenticationService;
         }
 
-        // this code adapted from: https://jasonwatmore.com/post/2018/08/14/aspnet-core-21-jwt-authentication-tutorial-with-example-api
         public User Login(string username, string password)
         {
-            var user = _context.User.SingleOrDefault(u => u.Username == username && u.Password == HashPassword(password));
+            var user = _context.User.SingleOrDefault(u => u.Username == username &&
+                _authenticationService.ValidateHash(u.Password, password));
 
             if (user == null)
             {
                 return null;
             }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, username)
-                }),
-                Expires = DateTime.UtcNow.AddDays(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
             var userWithToken = new User()
             {
                 Username = username,
-                Token = tokenHandler.WriteToken(token)
+                Token = _authenticationService.GenerateJwt(username, _appSettings.Secret)
             };
 
             return userWithToken;
-        }
-
-        private string HashPassword(string password)
-        {
-            byte[] salt = new byte[128 / 8];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(salt);
-            }
-
-            return Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: password,
-                salt: salt,
-                prf: KeyDerivationPrf.HMACSHA1,
-                iterationCount: 10000,
-                numBytesRequested: 256 / 8));
         }
 
         public User SignUp(string username, string password)
@@ -85,7 +49,7 @@ namespace RelativeRank.Services
             var user = new EntityFrameworkEntities.User()
             {
                 Username = username,
-                Password = HashPassword(password)
+                Password = _authenticationService.Hash(password)
             };
 
             _context.Add(user);
