@@ -2,6 +2,7 @@
 using RelativeRank.Entities;
 using RelativeRank.Interfaces;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace RelativeRank.Controllers
 {
@@ -13,9 +14,9 @@ namespace RelativeRank.Controllers
 
         public RelativeRankController(IShowRepository repository) => _repository = repository;
 
-        public ActionResult<IEnumerable<RankedShow>> GetAllShows()
+        public async Task<ActionResult<IEnumerable<RankedShow>>> GetAllShows()
         {
-            return _repository.GetAllShows();
+            return await _repository.GetAllShows();
         }
     }
 }

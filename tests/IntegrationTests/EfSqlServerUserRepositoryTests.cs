@@ -33,7 +33,7 @@ namespace RelativeRankTests.IntegrationTests
         }
 
         [Fact]
-        public void LoginWithValidCredentialsShouldReturnUserWithAToken()
+        public async void LoginWithValidCredentialsShouldReturnUserWithAToken()
         {
             var authenticationService = new AuthenticationService();
             var repository = new EfSqlServerUserRepository(_context, _appSettingsOptions, authenticationService);
@@ -49,7 +49,7 @@ namespace RelativeRankTests.IntegrationTests
             });
             _context.SaveChanges();
 
-            var user = repository.Login(username, password);
+            var user = await repository.Login(username, password);
 
             Assert.NotNull(user);
             Assert.NotNull(user.Token);

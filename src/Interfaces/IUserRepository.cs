@@ -1,12 +1,13 @@
 ﻿using RelativeRank.Entities;
+using System.Threading.Tasks;
 
 namespace RelativeRank.Interfaces
 {
     public interface IUserRepository
     {
-        User Login(string username, string password);
-        User SignUp(string username, string password);
-        RankedShowList GetUsersShows(string username);
-        void UpdateUsersShows(string username, RankedShowList updatedList);
+        Task<User> Login(string username, string password);
+        Task<User> SignUp(string username, string password);
+        Task<RankedShowList> GetUsersShows(string username);
+        Task<bool> UpdateUsersShows(User user, RankedShowList updatedList);
     }
 }

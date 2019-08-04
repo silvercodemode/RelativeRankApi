@@ -3,6 +3,8 @@ using RelativeRank.Interfaces;
 using System;
 using System.Linq;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace RelativeRank.Services
 {
@@ -19,9 +21,9 @@ namespace RelativeRank.Services
             _authenticationService = authenticationService;
         }
 
-        public User Login(string username, string password)
+        public async Task<User> Login(string username, string password)
         {
-            var user = _context.User.SingleOrDefault(u => u.Username == username &&
+            var user = await _context.User.SingleOrDefaultAsync(u => u.Username == username &&
                 _authenticationService.ValidateHash(u.Password, password));
 
             if (user == null)
@@ -38,9 +40,9 @@ namespace RelativeRank.Services
             return userWithToken;
         }
 
-        public User SignUp(string username, string password)
+        public async Task<User> SignUp(string username, string password)
         {
-            var userWithUsernameAlready = _context.User.SingleOrDefault(u => u.Username == username);
+            var userWithUsernameAlready = await _context.User.SingleOrDefaultAsync(u => u.Username == username);
             if (userWithUsernameAlready != null)
             {
                 return null;
@@ -55,15 +57,15 @@ namespace RelativeRank.Services
             _context.Add(user);
             _context.SaveChanges();
 
-            return Login(username, password);
+            return await Login(username, password);
         }
 
-        public RankedShowList GetUsersShows(string username)
+        public async Task<RankedShowList> GetUsersShows(string username)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateUsersShows(string username, RankedShowList updatedList)
+        public async Task<bool> UpdateUsersShows(User user, RankedShowList updatedList)
         {
             throw new NotImplementedException();
         }

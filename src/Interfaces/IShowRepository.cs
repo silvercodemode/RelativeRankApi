@@ -1,13 +1,14 @@
 ﻿using RelativeRank.EntityFrameworkEntities;
 using System.Collections.Generic;
 using RelativeRank.Entities;
+using System.Threading.Tasks;
 
 namespace RelativeRank.Interfaces
 {
     public interface IShowRepository
     {
-        List<RankedShow> GetAllShows();
-        void AddShow(RankedShow show);
-        void RemoveShow(RankedShow show);
+        Task<List<RankedShow>> GetAllShows();
+        Task<bool> AddShow(RankedShow show);
+        Task<bool> RemoveShow(RankedShow show);
     }
 }

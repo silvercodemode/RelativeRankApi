@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using RelativeRank.Interfaces;
 using RelativeRank.Entities;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace RelativeRank.Services
 {
@@ -12,18 +14,18 @@ namespace RelativeRank.Services
 
         public EfSqlServerShowRepository(RelativeRankContext context) => _context = context;
 
-        public void AddShow(RankedShow show)
+        public async Task<bool> AddShow(RankedShow show)
         {
             throw new NotImplementedException();
         }
 
-        public List<RankedShow> GetAllShows()
+        public async Task<List<RankedShow>> GetAllShows()
         {
-            var allShows = _context.Show.ToList();
+            var allShows = await _context.Show.ToListAsync();
             return allShows.Select(show => new RankedShow() { Name = show.Name }).ToList();
         }
 
-        public void RemoveShow(RankedShow show)
+        public Task<bool> RemoveShow(RankedShow show)
         {
             throw new NotImplementedException();
         }

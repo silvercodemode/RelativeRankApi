@@ -16,4 +16,8 @@
     <ProjectReference Include="..\src\RelativeRank.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IntegrationTests\MockImplementations\" />
+  </ItemGroup>
+
 </Project>
