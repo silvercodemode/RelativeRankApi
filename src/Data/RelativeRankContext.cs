@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RelativeRank.EntityFrameworkEntities;
 
-namespace RelativeRank.Services
+namespace RelativeRank.Data
 {
     public partial class RelativeRankContext : DbContext
     {

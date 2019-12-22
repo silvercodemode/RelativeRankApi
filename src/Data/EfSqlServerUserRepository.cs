@@ -1,12 +1,12 @@
 ﻿using RelativeRank.Entities;
 using RelativeRank.Interfaces;
 using System;
-using System.Linq;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using RelativeRank.Services;
 
-namespace RelativeRank.Services
+namespace RelativeRank.Data
 {
     public class EfSqlServerUserRepository : IUserRepository
     {

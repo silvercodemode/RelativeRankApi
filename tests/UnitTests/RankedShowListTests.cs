@@ -51,7 +51,7 @@ namespace RelativeRankTests.UnitTests
                 rankedShows.Add(showList[i]);
             }
 
-            var startingRanks = new List<short>();
+            var startingRanks = new List<int>();
             for (var i = 0; i < numberOfShowsToTest; i++)
             {
                 startingRanks.Add(rankedShows[i].Rank);
@@ -85,13 +85,13 @@ namespace RelativeRankTests.UnitTests
                 rankedShows.Add(showList[i]);
             }
 
-            var startingRanks = new List<short>();
+            var startingRanks = new List<int>();
             foreach (var show in rankedShows)
             {
                 startingRanks.Add(show.Rank);
             }
 
-            showList.Add(new RankedShow() { Rank = (short) numberOfShowsToTest });
+            showList.Add(new RankedShow() { Rank = (int) numberOfShowsToTest });
 
             for (var i = 0; i < numberOfShowsToTest; i++)
             {

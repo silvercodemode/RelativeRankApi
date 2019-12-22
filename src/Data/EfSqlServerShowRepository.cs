@@ -6,7 +6,7 @@ using RelativeRank.Entities;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace RelativeRank.Services
+namespace RelativeRank.Data
 {
     public class EfSqlServerShowRepository : IShowRepository
     {

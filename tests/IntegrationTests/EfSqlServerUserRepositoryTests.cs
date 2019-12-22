@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
-using RelativeRank.Entities;
+﻿using Xunit;
 using RelativeRank.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using RelativeRank.Data;
 
 namespace RelativeRankTests.IntegrationTests
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using RelativeRank.EntityFrameworkEntities;
+﻿using System.Collections.Generic;
 
 namespace RelativeRank.Entities
 {
@@ -20,13 +16,13 @@ namespace RelativeRank.Entities
             get { return _backingList[i]; }
             set { _backingList[i] = value; }
         }
-        public short ShowsInList { get { return (short) _backingList.Count; } }
+        public int ShowsInList { get { return  _backingList.Count; } }
 
         public void Add(RankedShow show)
         {
             if (show.Rank <= 0 || show.Rank > _backingList.Count)
             {
-                show.Rank = (short)(_backingList.Count + 1);
+                show.Rank = (_backingList.Count + 1);
                 _backingList.Add(show);
             }
             else
