@@ -8,13 +8,13 @@ using RelativeRank.Services;
 
 namespace RelativeRank.Data
 {
-    public class EfSqlServerUserRepository : IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly RelativeRankContext _context;
         private readonly AppSettings _appSettings;
         private readonly IAuthenticationService _authenticationService;
 
-        public EfSqlServerUserRepository(RelativeRankContext context, IOptions<AppSettings> appSettings, IAuthenticationService authenticationService)
+        public UserRepository(RelativeRankContext context, IOptions<AppSettings> appSettings, IAuthenticationService authenticationService)
         {
             _context = context;
             _appSettings = appSettings.Value;

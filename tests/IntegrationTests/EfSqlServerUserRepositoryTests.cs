@@ -28,29 +28,5 @@ namespace RelativeRankTests.IntegrationTests
             var serviceProvider = services.BuildServiceProvider();
             _appSettingsOptions = serviceProvider.GetService<IOptions<AppSettings>>();
         }
-
-        [Fact]
-        public async void LoginWithValidCredentialsShouldReturnUserWithAToken()
-        {
-            var authenticationService = new AuthenticationService();
-            var repository = new EfSqlServerUserRepository(_context, _appSettingsOptions, authenticationService);
-
-            var username = "username";
-            var password = "password";
-            var hashedPassword = authenticationService.Hash(password);
-
-            _context.User.Add(new RelativeRank.EntityFrameworkEntities.User
-            {
-                Username = username,
-                Password = hashedPassword
-            });
-            _context.SaveChanges();
-
-            var user = await repository.Login(username, password);
-
-            Assert.NotNull(user);
-            Assert.NotNull(user.Token);
-            Assert.IsType<string>(user.Token);
-        }
     }
 }

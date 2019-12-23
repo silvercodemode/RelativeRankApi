@@ -2,7 +2,7 @@
 
 namespace RelativeRank.Migrations
 {
-    public partial class FirstMigration : Migration
+    public partial class sf : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -10,23 +10,25 @@ namespace RelativeRank.Migrations
                 name: "shows",
                 columns: table => new
                 {
-                    name = table.Column<string>(unicode: false, maxLength: 128, nullable: false)
+                    Id = table.Column<string>(nullable: false),
+                    name = table.Column<string>(unicode: false, maxLength: 128, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_shows", x => x.name);
+                    table.PrimaryKey("PK_shows", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "users",
                 columns: table => new
                 {
-                    username = table.Column<string>(unicode: false, maxLength: 32, nullable: false),
-                    password = table.Column<string>(unicode: false, maxLength: 128, nullable: true)
+                    Id = table.Column<string>(nullable: false),
+                    username = table.Column<string>(unicode: false, maxLength: 32, nullable: true),
+                    password = table.Column<string>(unicode: false, maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_users", x => x.username);
+                    table.PrimaryKey("PK_users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -34,8 +36,9 @@ namespace RelativeRank.Migrations
                 columns: table => new
                 {
                     username = table.Column<string>(unicode: false, maxLength: 32, nullable: false),
-                    showname = table.Column<string>(unicode: false, maxLength: 128, nullable: false),
-                    rank = table.Column<short>(nullable: false)
+                    showname = table.Column<string>(unicode: false, maxLength: 256, nullable: false),
+                    Id = table.Column<string>(nullable: true),
+                    rank = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -44,14 +47,14 @@ namespace RelativeRank.Migrations
                         name: "FK__user_to_s__shown__0D7A0286",
                         column: x => x.showname,
                         principalTable: "shows",
-                        principalColumn: "name",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK__user_to_s__usern__0C85DE4D",
                         column: x => x.username,
                         principalTable: "users",
-                        principalColumn: "username",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

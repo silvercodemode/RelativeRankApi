@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RelativeRank.Data
 {
-    public class EfSqlServerShowRepository : IShowRepository
+    public class ShowRepository : IShowRepository
     {
         private readonly RelativeRankContext _context;
 
-        public EfSqlServerShowRepository(RelativeRankContext context) => _context = context;
+        public ShowRepository(RelativeRankContext context) => _context = context;
 
         public async Task<bool> AddShow(RankedShow show)
         {

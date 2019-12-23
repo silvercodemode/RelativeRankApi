@@ -17,7 +17,7 @@ namespace RelativeRank.Data
         {
             modelBuilder.Entity<Show>(entity =>
             {
-                entity.HasKey(e => e.Name);
+                entity.HasKey(e => e.Id);
 
                 entity.ToTable("shows");
 
@@ -30,7 +30,7 @@ namespace RelativeRank.Data
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.Username);
+                entity.HasKey(e => e.Id);
 
                 entity.ToTable("users");
 
@@ -42,7 +42,7 @@ namespace RelativeRank.Data
 
                 entity.Property(e => e.Password)
                     .HasColumnName("password")
-                    .HasMaxLength(128)
+                    .HasMaxLength(256)
                     .IsUnicode(false);
             });
 
@@ -63,7 +63,7 @@ namespace RelativeRank.Data
 
                 entity.Property(e => e.Showname)
                     .HasColumnName("showname")
-                    .HasMaxLength(128)
+                    .HasMaxLength(256)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Rank).HasColumnName("rank");
@@ -71,13 +71,13 @@ namespace RelativeRank.Data
                 entity.HasOne(d => d.ShownameNavigation)
                     .WithMany(p => p.UserToShowMapping)
                     .HasForeignKey(d => d.Showname)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__user_to_s__shown__0D7A0286");
 
                 entity.HasOne(d => d.UsernameNavigation)
                     .WithMany(p => p.UserToShowMapping)
                     .HasForeignKey(d => d.Username)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK__user_to_s__usern__0C85DE4D");
             });
         }

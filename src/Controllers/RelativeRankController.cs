@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace RelativeRank.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/")]
     public class RelativeRankController : ControllerBase
     {
         private readonly IShowRepository _repository;

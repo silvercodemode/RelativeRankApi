@@ -10,6 +10,7 @@ namespace RelativeRank.EntityFrameworkEntities
             UserToShowMapping = new HashSet<UserToShowMapping>();
         }
 
+        public string Id { get; set; }
         public string Name { get; set; }
 
         public ICollection<UserToShowMapping> UserToShowMapping { get; set; }
