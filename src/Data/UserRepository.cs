@@ -5,59 +5,31 @@ using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using RelativeRank.Services;
+using RelativeRank.DataTransferObjects;
 
 namespace RelativeRank.Data
 {
     public class UserRepository : IUserRepository
     {
         private readonly RelativeRankContext _context;
-        private readonly AppSettings _appSettings;
-        private readonly IAuthenticationService _authenticationService;
 
-        public UserRepository(RelativeRankContext context, IOptions<AppSettings> appSettings, IAuthenticationService authenticationService)
+        public UserRepository(RelativeRankContext context) => _context = context;
+
+        public async Task<NewUser> CreateNewUser(RelativeRank.EntityFrameworkEntities.User newUser)
         {
-            _context = context;
-            _appSettings = appSettings.Value;
-            _authenticationService = authenticationService;
+            await _context.User.AddAsync(newUser);
+            await _context.SaveChangesAsync();
+            var savedUser = await GetUserByUsername(newUser.Username);
+
+            return new NewUser
+            {
+                Username = savedUser.Username
+            };
         }
 
-        public async Task<User> Login(string username, string password)
+        public async Task<RelativeRank.EntityFrameworkEntities.User> GetUserByUsername(string username)
         {
-            var user = await _context.User.SingleOrDefaultAsync(u => u.Username == username &&
-                _authenticationService.ValidateHash(u.Password, password));
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var userWithToken = new User()
-            {
-                Username = username,
-                Token = _authenticationService.GenerateJwt(username, _appSettings.Secret)
-            };
-
-            return userWithToken;
-        }
-
-        public async Task<User> SignUp(string username, string password)
-        {
-            var userWithUsernameAlready = await _context.User.SingleOrDefaultAsync(u => u.Username == username);
-            if (userWithUsernameAlready != null)
-            {
-                return null;
-            }
-
-            var user = new EntityFrameworkEntities.User()
-            {
-                Username = username,
-                Password = _authenticationService.Hash(password)
-            };
-
-            _context.Add(user);
-            _context.SaveChanges();
-
-            return await Login(username, password);
+            return await _context.User.SingleOrDefaultAsync(user => user.Username == username);
         }
 
         public async Task<RankedShowList> GetUsersShows(string username)

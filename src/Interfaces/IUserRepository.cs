@@ -1,12 +1,13 @@
-﻿using RelativeRank.Entities;
+﻿using RelativeRank.DataTransferObjects;
+using RelativeRank.Entities;
 using System.Threading.Tasks;
 
 namespace RelativeRank.Interfaces
 {
     public interface IUserRepository
     {
-        Task<User> Login(string username, string password);
-        Task<User> SignUp(string username, string password);
+        Task<NewUser> CreateNewUser(RelativeRank.EntityFrameworkEntities.User newUser);
+        Task<RelativeRank.EntityFrameworkEntities.User> GetUserByUsername(string username);
         Task<RankedShowList> GetUsersShows(string username);
         Task<bool> UpdateUsersShows(User user, RankedShowList updatedList);
     }

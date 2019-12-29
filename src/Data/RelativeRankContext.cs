@@ -15,6 +15,8 @@ namespace RelativeRank.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.UseIdentityColumns();
+
             modelBuilder.Entity<Show>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -41,44 +43,43 @@ namespace RelativeRank.Data
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.Password)
-                    .HasColumnName("password")
-                    .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .HasColumnName("password");
+
+                entity.Property(e => e.PasswordSalt)
+                    .HasColumnName("password_salt");
             });
 
             modelBuilder.Entity<UserToShowMapping>(entity =>
             {
-                entity.HasKey(e => new { e.Username, e.Showname });
+                entity.HasKey(e => new { e.UserId, e.ShowId });
 
                 entity.ToTable("user_to_show_mapping");
 
-                entity.HasIndex(e => new { e.Username, e.Rank })
+                entity.HasIndex(e => new { e.UserId, e.Rank })
                     .HasName("uq_rank_unique_to_user")
                     .IsUnique();
 
-                entity.Property(e => e.Username)
-                    .HasColumnName("username")
+                entity.Property(e => e.UserId)
+                    .HasColumnName("userid")
                     .HasMaxLength(32)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Showname)
-                    .HasColumnName("showname")
+                entity.Property(e => e.ShowId)
+                    .HasColumnName("showid")
                     .HasMaxLength(256)
                     .IsUnicode(false);
 
                 entity.Property(e => e.Rank).HasColumnName("rank");
 
-                entity.HasOne(d => d.ShownameNavigation)
+                entity.HasOne(d => d.ShowNavigation)
                     .WithMany(p => p.UserToShowMapping)
-                    .HasForeignKey(d => d.Showname)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK__user_to_s__shown__0D7A0286");
+                    .HasForeignKey(d => d.ShowId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(d => d.UsernameNavigation)
+                entity.HasOne(d => d.UserNavigation)
                     .WithMany(p => p.UserToShowMapping)
-                    .HasForeignKey(d => d.Username)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK__user_to_s__usern__0C85DE4D");
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

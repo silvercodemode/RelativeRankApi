@@ -9,9 +9,10 @@ namespace RelativeRank.EntityFrameworkEntities
             UserToShowMapping = new HashSet<UserToShowMapping>();
         }
 
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Username { get; set; }
-        public string Password { get; set; }
+        public byte[] Password { get; set; }
+        public byte[] PasswordSalt { get; set; }
 
         public ICollection<UserToShowMapping> UserToShowMapping { get; set; }
     }

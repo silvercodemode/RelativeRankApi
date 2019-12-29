@@ -29,6 +29,8 @@ namespace RelativeRank
             });
 
             services.AddScoped(typeof(IShowRepository), typeof(ShowRepository));
+            services.AddScoped(typeof(IUserService), typeof(UserService));
+            services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,11 +45,11 @@ namespace RelativeRank
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
-            app.UseAuthentication();
+/*            app.UseAuthentication();
+
+            app.UseAuthorization();*/
 
             app.UseEndpoints(endpoints =>
             {
