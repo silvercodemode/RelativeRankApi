@@ -1,68 +1,63 @@
 ﻿using RelativeRank.DataTransferObjects;
-using RelativeRank.EntityFrameworkEntities;
 using RelativeRank.Interfaces;
 using System;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using System.Security.Claims;
+using RelativeRank.Config;
+using Microsoft.Extensions.Options;
 
 namespace RelativeRank.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly AppSettings _appSettings;
 
-        public UserService(IUserRepository userRepository) => _userRepository = userRepository;
-
-        public async Task<User> Authenticate(UserAuthentication userAuthentication)
+        public UserService(IUserRepository userRepository, IOptions<AppSettings> appSettings)
         {
-            if (string.IsNullOrEmpty(userAuthentication?.Username) || string.IsNullOrEmpty(userAuthentication?.Password))
-            {
-                return null;
-            }
-
-            var user = await _userRepository.GetUserByUsername(userAuthentication.Username);
-
-            if (user == null || !VerifyPasswordHash(userAuthentication.Password, user.Password, user.PasswordSalt))
-            {
-                return null;
-            }
-
-            return user;
+            _userRepository = userRepository;
+            _appSettings = appSettings.Value;
         }
 
-        public async Task<NewUser> CreateNewUser(NewUser newUser)
+        public async Task<Entities.User> GetUserByUsername(string username)
         {
-            if (string.IsNullOrEmpty(newUser?.Username) || string.IsNullOrEmpty(newUser?.Password))
+            if (string.IsNullOrEmpty(username))
             {
                 return null;
             }
 
-            byte[] hashedPassword;
-            byte[] passwordSalt;
-            CreatePasswordHash(newUser.Password, out hashedPassword, out passwordSalt);
+            var user = await _userRepository.GetUserByUsername(username);
 
-            var user = new User
+            return new Entities.User
             {
-                Username = newUser.Username,
-                Password = hashedPassword,
-                PasswordSalt = passwordSalt
+                Id = user.Id,
+                Username = user.Username
             };
-
-            var createdUser = await _userRepository.CreateNewUser(user);
-
-            return createdUser;
         }
 
-        // https://jasonwatmore.com/post/2019/10/14/aspnet-core-3-simple-api-for-authentication-registration-and-user-management
-        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        public async Task<Entities.User> Authenticate(LoginModel loginInfo)
         {
-            if (password == null) throw new ArgumentNullException("password");
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
-
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            if (string.IsNullOrEmpty(loginInfo?.Username) || string.IsNullOrEmpty(loginInfo?.Password))
             {
-                passwordSalt = hmac.Key;
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                return null;
             }
+
+            var user = await _userRepository.GetUserByUsername(loginInfo.Username);
+
+            if (user == null || !VerifyPasswordHash(loginInfo.Password, user.Password, user.PasswordSalt))
+            {
+                return null;
+            }
+
+            return new Entities.User
+            {
+                Id = user.Id,
+                Username = user.Username,
+                Token = CreateJwt($"{user.Id}")
+            };
         }
 
         private static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
@@ -82,6 +77,62 @@ namespace RelativeRank.Services
             }
 
             return true;
+        }
+
+        private string CreateJwt(string claim)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim("user", claim)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));
+        }
+
+        public async Task<Entities.User> CreateNewUser(SignUpModel newUser)
+        {
+            if (string.IsNullOrEmpty(newUser?.Username) || string.IsNullOrEmpty(newUser?.Password))
+            {
+                return null;
+            }
+
+            byte[] hashedPassword;
+            byte[] passwordSalt;
+            CreatePasswordHash(newUser.Password, out hashedPassword, out passwordSalt);
+
+            var user = new EntityFrameworkEntities.User
+            {
+                Username = newUser.Username,
+                Password = hashedPassword,
+                PasswordSalt = passwordSalt
+            };
+
+            var createdUser = await _userRepository.CreateNewUser(user);
+
+            return new Entities.User
+            {
+                Id = createdUser.Id,
+                Username = createdUser.Username,
+                Token = CreateJwt($"{createdUser.Id}")
+            };
+        }
+
+        private static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            if (password == null) throw new ArgumentNullException("password");
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+
+            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
         }
     }
 }

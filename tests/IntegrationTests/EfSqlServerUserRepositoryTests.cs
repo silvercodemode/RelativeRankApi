@@ -1,5 +1,5 @@
 ﻿using Xunit;
-using RelativeRank.Services;
+using RelativeRank.Config;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

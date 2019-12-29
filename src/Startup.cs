@@ -7,6 +7,10 @@ using Microsoft.EntityFrameworkCore;
 using RelativeRank.Services;
 using RelativeRank.Interfaces;
 using RelativeRank.Data;
+using RelativeRank.Config;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 namespace RelativeRank
 {
@@ -24,11 +28,33 @@ namespace RelativeRank
         {
             services.AddControllers();
 
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
             services.AddDbContext<RelativeRankContext>(options => {
                 options.UseNpgsql(Configuration.GetConnectionString("postgres"));
             });
 
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettingsSection.Get<AppSettings>().Secret)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
             services.AddScoped(typeof(IShowRepository), typeof(ShowRepository));
+
             services.AddScoped(typeof(IUserService), typeof(UserService));
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
         }
@@ -47,9 +73,9 @@ namespace RelativeRank
 
             app.UseRouting();
 
-/*            app.UseAuthentication();
+            app.UseAuthentication();
 
-            app.UseAuthorization();*/
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

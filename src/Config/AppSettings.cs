@@ -1,5 +1,4 @@
-﻿using System;
-namespace RelativeRank.Services
+﻿namespace RelativeRank.Config
 {
     public class AppSettings
     {

@@ -15,14 +15,15 @@ namespace RelativeRank.Data
 
         public UserRepository(RelativeRankContext context) => _context = context;
 
-        public async Task<NewUser> CreateNewUser(RelativeRank.EntityFrameworkEntities.User newUser)
+        public async Task<User> CreateNewUser(RelativeRank.EntityFrameworkEntities.User newUser)
         {
             await _context.User.AddAsync(newUser);
             await _context.SaveChangesAsync();
             var savedUser = await GetUserByUsername(newUser.Username);
 
-            return new NewUser
+            return new User
             {
+                Id = savedUser.Id,
                 Username = savedUser.Username
             };
         }

@@ -6,7 +6,7 @@ namespace RelativeRank.Interfaces
 {
     public interface IUserRepository
     {
-        Task<NewUser> CreateNewUser(RelativeRank.EntityFrameworkEntities.User newUser);
+        Task<User> CreateNewUser(RelativeRank.EntityFrameworkEntities.User newUser);
         Task<RelativeRank.EntityFrameworkEntities.User> GetUserByUsername(string username);
         Task<RankedShowList> GetUsersShows(string username);
         Task<bool> UpdateUsersShows(User user, RankedShowList updatedList);
