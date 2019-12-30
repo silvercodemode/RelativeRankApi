@@ -9,6 +9,7 @@ namespace RelativeRank.Entities
         public RankedShowList()
         {
             _backingList = new List<RankedShow>();
+            RankedShows = _backingList;
         }
 
         public RankedShow this[int i]
@@ -16,7 +17,9 @@ namespace RelativeRank.Entities
             get { return _backingList[i]; }
             set { _backingList[i] = value; }
         }
-        public int ShowsInList { get { return  _backingList.Count; } }
+        public int NumberOfShowsInList { get { return  _backingList.Count; } }
+
+        public List<RankedShow> RankedShows { get; }
 
         public void Add(RankedShow show)
         {

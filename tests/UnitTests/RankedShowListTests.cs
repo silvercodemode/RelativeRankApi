@@ -10,10 +10,10 @@ namespace RelativeRankTests.UnitTests
         public void AddingShowToListShouldIncreaseShowsInListByOne()
         {
             var showList = new RankedShowList();
-            var showsInListBeforeAddingShow = showList.ShowsInList;
+            var showsInListBeforeAddingShow = showList.NumberOfShowsInList;
 
             showList.Add(new RankedShow());
-            var showsInListAfterAddingShow = showList.ShowsInList;
+            var showsInListAfterAddingShow = showList.NumberOfShowsInList;
 
             Assert.Equal(showsInListBeforeAddingShow + 1, showsInListAfterAddingShow);
         }
@@ -110,12 +110,12 @@ namespace RelativeRankTests.UnitTests
                 showList.Add(new RankedShow());
             }
 
-            Assert.Equal(showsInList, showList.ShowsInList);
+            Assert.Equal(showsInList, showList.NumberOfShowsInList);
 
             var showWithRank100 = new RankedShow() { Rank = 100 };
             showList.Add(showWithRank100);
 
-            Assert.Equal(showList.ShowsInList, showWithRank100.Rank);
+            Assert.Equal(showList.NumberOfShowsInList, showWithRank100.Rank);
         }
 
         [Fact]

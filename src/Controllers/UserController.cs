@@ -48,6 +48,40 @@ namespace RelativeRank.Controllers
             return Ok(userWithToken);
         }
 
+        [HttpGet("{username}/showlist")]
+        public async Task<IActionResult> GetUserShowList(string username)
+        {
+            var user = await _userService.GetUserByUsername(username);
+
+            var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
+            if (!requestHasUserClaim)
+            {
+                return BadRequest("Bad credentials.");
+            }
+
+            var list = new RankedShowList();
+
+            list.Add(new RankedShow
+            {
+                Name = "Love Live",
+                Rank = 2
+            });
+
+            list.Add(new RankedShow
+            {
+                Name = "Eva",
+                Rank = 1
+            });
+
+            list.Add(new RankedShow
+            {
+                Name = "Kaiba",
+                Rank = 3
+            });
+
+            return Ok(list);
+        }
+
         [HttpGet("claims")]
         public async Task<IActionResult> Claims()
         {
@@ -68,12 +102,12 @@ namespace RelativeRank.Controllers
             var user = await _userService.GetUserByUsername(username);
 
             var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
-            if (requestHasUserClaim)
+            if (!requestHasUserClaim)
             {
-                return Ok($"Hi {username}");
+                return BadRequest("Bad credentials.");
             }
-
-            return BadRequest("Bad credentials.");
+            
+            return Ok($"Hi {username}");
         }
     }
 }
