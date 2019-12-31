@@ -15,11 +15,16 @@ namespace RelativeRank.Data
 
         public UserRepository(RelativeRankContext context) => _context = context;
 
-        public async Task<User> CreateNewUser(RelativeRank.EntityFrameworkEntities.User newUser)
+        public async Task<User> CreateNewUser(EntityFrameworkEntities.User newUser)
         {
+            if (newUser == null)
+            {
+                throw new ArgumentNullException(nameof(newUser));
+            }
+
             await _context.User.AddAsync(newUser);
-            await _context.SaveChangesAsync();
-            var savedUser = await GetUserByUsername(newUser.Username);
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+            var savedUser = await GetUserByUsername(newUser.Username).ConfigureAwait(false);
 
             return new User
             {
@@ -28,9 +33,14 @@ namespace RelativeRank.Data
             };
         }
 
-        public async Task<RelativeRank.EntityFrameworkEntities.User> GetUserByUsername(string username)
+        public async Task<EntityFrameworkEntities.User> GetUserByUsername(string username)
         {
-            return await _context.User.SingleOrDefaultAsync(user => user.Username == username);
+            if (username == null)
+            {
+                throw new ArgumentNullException(nameof(username));
+            }
+
+            return await _context.User.SingleOrDefaultAsync(user => user.Username == username).ConfigureAwait(false);
         }
 
         public async Task<RankedShowList> GetUsersShows(string username)

@@ -1,13 +1,33 @@
 using Xunit;
 using RelativeRank.Entities;
 using System.Collections.Generic;
+using System;
 
 namespace RelativeRankTests.UnitTests
 {
     public class RankedShowListTests
     {
         [Fact]
-        public void AddingShowToListShouldIncreaseShowsInListByOne()
+        public void Enumeration_ShouldWork()
+        {
+            // Arrange
+            var showList = new RankedShowList();
+
+            // Act and Assert
+            foreach (var show in showList);
+        }
+        [Fact]
+        public void AddingNullShow_InAddMethod_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var showList = new RankedShowList();
+
+            // Act and Assert
+            Assert.Throws<ArgumentNullException>(() => showList.Add(null));
+        }
+
+        [Fact]
+        public void AddingShowToList_ShouldIncreaseNumberOfShowsInList_ByOne()
         {
             var showList = new RankedShowList();
             var showsInListBeforeAddingShow = showList.NumberOfShowsInList;
@@ -19,7 +39,7 @@ namespace RelativeRankTests.UnitTests
         }
 
         [Fact]
-        public void RankOfEachShowInRankedShowListShouldMatchIndexInShowListPlusOne()
+        public void RankOfEachShow_InRankedShowList_ShouldMatch_IndexInShowListPlusOne()
         {
             var showList = new RankedShowList();
 
@@ -37,7 +57,7 @@ namespace RelativeRankTests.UnitTests
         }
 
         [Fact]
-        public void AddingShowWithRankOneShouldIncrementAllOtherShowsRankByOne()
+        public void AddingShow_WithRankOne_ShouldIncrementAllOtherShowsRank_ByOne()
         {
             var showList = new RankedShowList();
             var rankedShows = new List<RankedShow>();
@@ -73,7 +93,7 @@ namespace RelativeRankTests.UnitTests
         }
 
         [Fact]
-        public void AddingShowWithRankEqualToNumberOfShowsInListShouldLeaveEachShowInListsRankUnchanged()
+        public void AddingShow_WithRankEqualToNumberOfShowsInList_ShouldLeaveEachShowInListsRankUnchanged()
         {
             var showList = new RankedShowList();
             var rankedShows = new List<RankedShow>();
@@ -100,7 +120,7 @@ namespace RelativeRankTests.UnitTests
         }
 
         [Fact]
-        public void AddingShowWithRankHigherThanShowsInListShouldChangeShowsRankToEqualShowsInList()
+        public void AddingShow_WithRankHigherThanNumberOfShowsInList_ShouldChangeShowsRank_ToNumberOfShowsInList()
         {
             var showList = new RankedShowList();
 
@@ -119,7 +139,7 @@ namespace RelativeRankTests.UnitTests
         }
 
         [Fact]
-        public void GetPercentileRankAtIndexMethodShouldCorrectlyCalculateThePercentileRankOfEachShow()
+        public void GetPercentileRankAtIndexMethod_ShouldCorrectlyCalculate_ThePercentileRankOfEachShow()
         {
             var showList = new RankedShowList();
 
@@ -136,7 +156,7 @@ namespace RelativeRankTests.UnitTests
         }
 
         [Fact]
-        public void EachShowsPercentileRankShouldMatchValueFromGetPercentileRankAtIndex()
+        public void EachShowsPercentileRank_ShouldMatchValue_FromGetPercentileRankAtIndex()
         {
             var showList = new RankedShowList();
 
@@ -147,6 +167,196 @@ namespace RelativeRankTests.UnitTests
             }
 
             for (var i = 0; i < showsInList; i++)
+            {
+                var expected = showList.GetPercentileRankAtIndex(i);
+                var actual = showList[i].PercentileRank;
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public void PassingNullShowEnumerable_ToReplaceAllMethod_ThrowsArgumentNullException()
+        {
+            // Arrange
+            var showList = new RankedShowList();
+
+            // Act and Assert
+            Assert.Throws<ArgumentNullException>(() => showList.ReplaceAll(null));
+        }
+
+        [Fact]
+        public void PassingEnumerable_ThatContainsMultipleShowsWithTheSameRank_ToReplaceAllMethod_ThrowsArgumentException()
+        {
+            // Arrange
+            var showList = new RankedShowList();
+
+            var replacementList = new List<RankedShow>();
+
+            replacementList.Add(new RankedShow
+            {
+                Name = "show1",
+                Rank = 1
+            });
+
+            replacementList.Add(new RankedShow
+            {
+                Name = "show2",
+                Rank = 1
+            });
+
+            // Act and Assert
+            Assert.Throws<ArgumentException>(() => showList.ReplaceAll(replacementList));
+        }
+
+        [Fact]
+        public void AfterReplaceAll_RankOfEachShow_InRankedShowList_ShouldMatch_IndexInShowListPlusOne()
+        {
+            // Arrange
+            var showList = new RankedShowList();
+
+            var showsInList = 3;
+            for (var i = 0; i < showsInList; i++)
+            {
+                showList.Add(new RankedShow());
+            }
+
+            var replacementList = new List<RankedShow>();
+
+            replacementList.Add(new RankedShow
+            {
+                Name = "show1",
+                Rank = 2
+            });
+
+            replacementList.Add(new RankedShow
+            {
+                Name = "show2",
+                Rank = 1
+            });
+
+            replacementList.Add(new RankedShow
+            {
+                Name = "show3",
+                Rank = 3
+            });
+
+            // Act
+            showList.ReplaceAll(replacementList);
+
+            // Assert
+            for (var i = 0; i < showsInList; i++)
+            {
+                Assert.Equal(i + 1, showList[i].Rank);
+            }
+        }
+
+        [Fact]
+        public void AfterReplaceAll_EachShowsPercentileRank_ShouldMatchValue_FromGetPercentileRankAtIndex()
+        {
+            // Arrange
+            var showList = new RankedShowList();
+
+            var showsInList = 3;
+            for (var i = 0; i < showsInList; i++)
+            {
+                showList.Add(new RankedShow());
+            }
+
+            var replacementList = new List<RankedShow>();
+
+            replacementList.Add(new RankedShow
+            {
+                Name = "show1",
+                Rank = 2
+            });
+
+            replacementList.Add(new RankedShow
+            {
+                Name = "show2",
+                Rank = 1
+            });
+
+            replacementList.Add(new RankedShow
+            {
+                Name = "show3",
+                Rank = 3
+            });
+
+            // Act
+            showList.ReplaceAll(replacementList);
+
+            // Assert
+            for (var i = 0; i < 3; i++)
+            {
+                var expected = showList.GetPercentileRankAtIndex(i);
+                var actual = showList[i].PercentileRank;
+                Assert.Equal(expected, actual);
+            }
+        }
+
+        [Fact]
+        public void ListConstructedBy_IEnumerableOfRankedShowConstructor_ShouldHaveValid_Ranks()
+        {
+            // Arrange
+            var shows = new List<RankedShow>();
+
+            shows.Add(new RankedShow
+            {
+                Name = "show1",
+                Rank = 2
+            });
+
+            shows.Add(new RankedShow
+            {
+                Name = "show2",
+                Rank = 1
+            });
+
+            shows.Add(new RankedShow
+            {
+                Name = "show3",
+                Rank = 3
+            });
+
+            // Act
+            var showList = new RankedShowList(shows);
+
+            // Assert
+            for (var i = 0; i < 3; i++)
+            {
+                Assert.Equal(i + 1, showList[i].Rank);
+            }
+        }
+
+        [Fact]
+        public void ListConstructedBy_IEnumerableOfRankedShowConstructor_ShouldHaveValid_PercentileRanks()
+        {
+            // Arrange
+            var shows = new List<RankedShow>();
+
+            shows.Add(new RankedShow
+            {
+                Name = "show1",
+                Rank = 2
+            });
+
+            shows.Add(new RankedShow
+            {
+                Name = "show2",
+                Rank = 1
+            });
+
+            shows.Add(new RankedShow
+            {
+                Name = "show3",
+                Rank = 3
+            });
+
+            // Act
+            var showList = new RankedShowList(shows);
+
+            // Assert
+            for (var i = 0; i < 3; i++)
             {
                 var expected = showList.GetPercentileRankAtIndex(i);
                 var actual = showList[i].PercentileRank;

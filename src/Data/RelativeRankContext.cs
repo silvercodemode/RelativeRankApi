@@ -40,7 +40,12 @@ namespace RelativeRank.Data
                     .HasColumnName("username")
                     .HasMaxLength(32)
                     .IsUnicode(false)
-                    .ValueGeneratedNever();
+                    .ValueGeneratedNever()
+                    .IsRequired();
+
+                entity.HasIndex(e => e.Username)
+                    .HasName("uq_username_unique_to_user")
+                    .IsUnique();
 
                 entity.Property(e => e.Password)
                     .HasColumnName("password");

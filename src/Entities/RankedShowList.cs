@@ -1,14 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
+using System.Resources;
 
 namespace RelativeRank.Entities
 {
-    public class RankedShowList
+    public class RankedShowList : IEnumerable<RankedShow>
     {
         private List<RankedShow> _backingList;
 
         public RankedShowList()
         {
             _backingList = new List<RankedShow>();
+            RankedShows = _backingList;
+        }
+
+        public RankedShowList(IEnumerable<RankedShow> shows)
+        {
+            ReplaceAll(shows);
             RankedShows = _backingList;
         }
 
@@ -23,6 +34,11 @@ namespace RelativeRank.Entities
 
         public void Add(RankedShow show)
         {
+            if (show == null)
+            {
+                throw new ArgumentNullException(nameof(show));
+            }
+
             if (show.Rank <= 0 || show.Rank > _backingList.Count)
             {
                 show.Rank = (_backingList.Count + 1);
@@ -49,9 +65,49 @@ namespace RelativeRank.Entities
             }
         }
 
+        public void ReplaceAll(IEnumerable<RankedShow> shows)
+        {
+            if (shows == null)
+            {
+                throw new ArgumentNullException(nameof(shows));
+            }
+
+            var usedRanks = new HashSet<int>();
+            foreach (var show in shows)
+            {
+                if (usedRanks.Contains(show.Rank))
+                {
+                    throw new ArgumentException(
+                        new ResourceManager("RelativeRank.Config.ExceptionMessages",
+                            Assembly.GetExecutingAssembly())
+                                .GetString("NoTiesInRankedList", new CultureInfo("en-US")));
+                }
+                usedRanks.Add(show.Rank);
+            }
+
+            _backingList = new List<RankedShow>(shows);
+            _backingList.Sort((a, b) => a.Rank - b.Rank);
+
+            for (var i = 0; i < _backingList.Count; i++)
+            {
+                _backingList[i].Rank = i + 1;
+                _backingList[i].PercentileRank = GetPercentileRankAtIndex(i);
+            }
+        }
+
         public double GetPercentileRankAtIndex(int index)
         {
             return 1 - (1 / ((double) (_backingList.Count + 1))) * (index + 1);
+        }
+
+        public IEnumerator<RankedShow> GetEnumerator()
+        {
+            return ((IEnumerable<RankedShow>)_backingList).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<RankedShow>)_backingList).GetEnumerator();
         }
     }
 }

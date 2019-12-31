@@ -24,7 +24,7 @@ namespace RelativeRank.Controllers
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] SignUpModel newUser)
         {
-            var createdUser = await _userService.CreateNewUser(newUser);
+            var createdUser = await _userService.CreateNewUser(newUser).ConfigureAwait(false);
 
             if (createdUser == null)
             {
@@ -38,7 +38,7 @@ namespace RelativeRank.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginInfo)
         {
-            var userWithToken = await _userService.Authenticate(loginInfo);
+            var userWithToken = await _userService.Authenticate(loginInfo).ConfigureAwait(false);
 
             if (userWithToken == null)
             {
@@ -51,7 +51,7 @@ namespace RelativeRank.Controllers
         [HttpGet("{username}/showlist")]
         public async Task<IActionResult> GetUserShowList(string username)
         {
-            var user = await _userService.GetUserByUsername(username);
+            var user = await _userService.GetUserByUsername(username).ConfigureAwait(false);
 
             var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
             if (!requestHasUserClaim)
@@ -83,7 +83,7 @@ namespace RelativeRank.Controllers
         }
 
         [HttpGet("claims")]
-        public async Task<IActionResult> Claims()
+        public IActionResult Claims()
         {
             var claims = User.Claims.ToList();
             var res = "";
@@ -99,7 +99,7 @@ namespace RelativeRank.Controllers
         [HttpGet("{username}")]
         public async Task<IActionResult> UserDetails(string username)
         {
-            var user = await _userService.GetUserByUsername(username);
+            var user = await _userService.GetUserByUsername(username).ConfigureAwait(false);
 
             var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
             if (!requestHasUserClaim)
