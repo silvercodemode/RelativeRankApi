@@ -26,7 +26,8 @@ namespace RelativeRank
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson();
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
@@ -57,6 +58,7 @@ namespace RelativeRank
 
             services.AddScoped(typeof(IUserService), typeof(UserService));
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+            services.AddScoped(typeof(IUserShowListRepository), typeof(UserShowListRepository));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -9,5 +9,7 @@ namespace RelativeRank.Interfaces
         Task<User> GetUserByUsername(string username);
         Task<User> CreateNewUser(SignUpModel newUser);
         Task<User> Authenticate(LoginModel userAuthentication);
+        RankedShowList GetUsersShowList(int userId);
+        Task<RankedShowList> UpdateUsersShowList(int userId, RankedShowList rankedShowList);
     }
 }

@@ -59,27 +59,24 @@ namespace RelativeRank.Controllers
                 return BadRequest("Bad credentials.");
             }
 
-            var list = new RankedShowList();
+            return Ok(_userService.GetUsersShowList(user.Id));
+        }
 
-            list.Add(new RankedShow
+        [HttpPut("{username}/showlist")]
+        public async Task<IActionResult> UpdateUsersShowList([FromBody] UpdateUserShowListModel updateUserShowListModel)
+        {
+            var user = await _userService.GetUserByUsername(updateUserShowListModel.Username).ConfigureAwait(false);
+
+            var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
+            if (!requestHasUserClaim)
             {
-                Name = "Love Live",
-                Rank = 2
-            });
+                return BadRequest("Bad credentials.");
+            }
 
-            list.Add(new RankedShow
-            {
-                Name = "Eva",
-                Rank = 1
-            });
+            var result = await _userService.UpdateUsersShowList(user.Id, new RankedShowList(updateUserShowListModel.ShowList))
+                .ConfigureAwait(false);
 
-            list.Add(new RankedShow
-            {
-                Name = "Kaiba",
-                Rank = 3
-            });
-
-            return Ok(list);
+            return Ok(result);
         }
 
         [HttpGet("claims")]

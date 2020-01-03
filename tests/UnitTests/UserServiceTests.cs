@@ -45,7 +45,7 @@ namespace RelativeRankTests.UnitTests
                     Username = username
                 }));
 
-            var userService = new UserService(_userRepositoryMock.Object, _appSettingsOptions);
+            var userService = new UserService(_userRepositoryMock.Object, null, _appSettingsOptions);
 
             // Act
             var createdUser = await userService.CreateNewUser(new SignUpModel
@@ -76,7 +76,7 @@ namespace RelativeRankTests.UnitTests
                     Username = username
                 }));
 
-            var userService = new UserService(_userRepositoryMock.Object, _appSettingsOptions);
+            var userService = new UserService(_userRepositoryMock.Object, null, _appSettingsOptions);
 
             // Act
             var createdUser = await userService.CreateNewUser(new SignUpModel
@@ -105,7 +105,7 @@ namespace RelativeRankTests.UnitTests
                     Username = username
                 }));
 
-            var userService = new UserService(_userRepositoryMock.Object, _appSettingsOptions);
+            var userService = new UserService(_userRepositoryMock.Object, null, _appSettingsOptions);
 
             // Act
             var createdUser = await userService.CreateNewUser(new SignUpModel
@@ -123,7 +123,7 @@ namespace RelativeRankTests.UnitTests
         {
             // Arrange
             var password = "password";
-            var userService = new UserService(_userRepositoryMock.Object, _appSettingsOptions);
+            var userService = new UserService(_userRepositoryMock.Object, null, _appSettingsOptions);
 
             // Act
             byte[] passwordHash;

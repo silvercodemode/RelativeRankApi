@@ -8,17 +8,29 @@ using System.Text;
 using System.Security.Claims;
 using RelativeRank.Config;
 using Microsoft.Extensions.Options;
+using RelativeRank.Entities;
 
 namespace RelativeRank.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUserShowListRepository _userShowListRepository;
         private readonly AppSettings _appSettings;
 
-        public UserService(IUserRepository userRepository, IOptions<AppSettings> appSettings)
+        public UserService(
+            IUserRepository userRepository,
+            IUserShowListRepository userShowListRepository,
+            IOptions<AppSettings> appSettings
+        )
         {
+            if (appSettings == null)
+            {
+                throw new ArgumentNullException(nameof(appSettings));
+            }
+
             _userRepository = userRepository;
+            _userShowListRepository = userShowListRepository;
             _appSettings = appSettings.Value;
         }
 
@@ -29,7 +41,7 @@ namespace RelativeRank.Services
                 return null;
             }
 
-            var user = await _userRepository.GetUserByUsername(username);
+            var user = await _userRepository.GetUserByUsername(username).ConfigureAwait(false);
 
             return new Entities.User
             {
@@ -45,7 +57,7 @@ namespace RelativeRank.Services
                 return null;
             }
 
-            var user = await _userRepository.GetUserByUsername(loginInfo.Username);
+            var user = await _userRepository.GetUserByUsername(loginInfo.Username).ConfigureAwait(false);
 
             if (user == null || !VerifyPasswordHash(loginInfo.Password, user.Password, user.PasswordSalt))
             {
@@ -62,8 +74,8 @@ namespace RelativeRank.Services
 
         public static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
-            if (password == null) throw new ArgumentNullException("password");
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+            if (password == null) throw new ArgumentNullException(nameof(password));
+            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", nameof(password));
             if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
             if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
 
@@ -133,6 +145,16 @@ namespace RelativeRank.Services
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
+
+        public RankedShowList GetUsersShowList(int userId)
+        {
+            return _userShowListRepository.GetUsersShowList(userId);
+        }
+
+        public async Task<RankedShowList> UpdateUsersShowList(int userId, RankedShowList rankedShowList)
+        {
+            return await _userShowListRepository.UpdateUsersShowList(userId, rankedShowList).ConfigureAwait(false);
         }
     }
 }
