@@ -65,24 +65,24 @@ namespace RelativeRank.Data
                 }
             }
 
-            foreach (var storedShow in rankedShowList)
+            foreach (var submittedShow in rankedShowList)
             {
-                if (usedShowDictionary.ContainsKey(storedShow.Name))
+                if (usedShowDictionary.ContainsKey(submittedShow.Name))
                 {
                     var showToUpdate = _context.UserToShowMapping
                         .Where(userShow => userShow.UserId == userId &&
-                            userShow.ShowId == usedShowDictionary[storedShow.Name].ShowId)
+                            userShow.ShowId == usedShowDictionary[submittedShow.Name].ShowId)
                         .FirstOrDefault();
 
-                    showToUpdate.Rank = storedShow.Rank;
+                    showToUpdate.Rank = submittedShow.Rank;
                 }
                 else
                 {
                     var newShow = new UserToShowMapping
                     {
                         UserId = userId,
-                        ShowId = _context.Show.Where(show => show.Name == storedShow.Name).FirstOrDefault().Id,
-                        Rank = storedShow.Rank
+                        ShowId = _context.Show.Where(show => show.Name == submittedShow.Name).FirstOrDefault().Id,
+                        Rank = submittedShow.Rank
                     };
 
                     _context.Add(newShow);

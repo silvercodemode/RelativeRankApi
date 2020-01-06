@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RelativeRank.DataTransferObjects;
 using RelativeRank.Entities;
@@ -65,15 +63,30 @@ namespace RelativeRank.Controllers
         [HttpPut("{username}/showlist")]
         public async Task<IActionResult> UpdateUsersShowList([FromBody] UpdateUserShowListModel updateUserShowListModel)
         {
+            if (updateUserShowListModel == null)
+            {
+                return BadRequest("Request body was empty.");
+            }
+
+            RankedShowList updatedShowList;
+            try
+            {
+                updatedShowList = new RankedShowList(updateUserShowListModel.ShowList);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+
             var user = await _userService.GetUserByUsername(updateUserShowListModel.Username).ConfigureAwait(false);
 
             var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
             if (!requestHasUserClaim)
             {
-                return BadRequest("Bad credentials.");
+                return BadRequest($"You do not have permissions to update {updateUserShowListModel.Username}'s showlist.");
             }
 
-            var result = await _userService.UpdateUsersShowList(user.Id, new RankedShowList(updateUserShowListModel.ShowList))
+            var result = await _userService.UpdateUsersShowList(user.Id, new RankedShowList(updatedShowList))
                 .ConfigureAwait(false);
 
             return Ok(result);
