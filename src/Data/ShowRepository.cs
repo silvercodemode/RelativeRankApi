@@ -21,8 +21,25 @@ namespace RelativeRank.Data
 
         public async Task<List<RankedShow>> GetAllShows()
         {
-            var allShows = await _context.Show.ToListAsync();
-            return allShows.Select(show => new RankedShow() { Name = show.Name }).ToList();
+            var allShows = _context.UserToShowMapping
+                .Join(
+                    _context.Show,
+                    userShow => userShow.ShowId,
+                    show => show.Id,
+                    (userShow, show) => new RankedShow
+                    {
+                        Name = show.Name,
+                        PercentileRank = userShow.PercentileRank
+                    }
+                )
+                .GroupBy(rankedShow => rankedShow.Name)
+                .Select(rankedShow => new RankedShow
+                {
+                    Name = rankedShow.Key,
+                    PercentileRank = rankedShow.Average(show => show.PercentileRank)
+                });
+
+            return await allShows.ToListAsync().ConfigureAwait(false);
         }
 
         public Task<bool> RemoveShow(RankedShow show)

@@ -110,13 +110,12 @@ namespace RelativeRank.Controllers
         public async Task<IActionResult> UserDetails(string username)
         {
             var user = await _userService.GetUserByUsername(username).ConfigureAwait(false);
-
-            var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
-            if (!requestHasUserClaim)
-            {
-                return BadRequest("Bad credentials.");
-            }
             
+            if (user == null)
+            {
+                return BadRequest($"User with username: {username} does not exist.");
+            }
+
             return Ok($"Hi {username}");
         }
     }

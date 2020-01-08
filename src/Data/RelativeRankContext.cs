@@ -76,6 +76,8 @@ namespace RelativeRank.Data
 
                 entity.Property(e => e.Rank).HasColumnName("rank");
 
+                entity.Property(e => e.PercentileRank).HasColumnName("percentile_rank");
+
                 entity.HasOne(d => d.ShowNavigation)
                     .WithMany(p => p.UserToShowMapping)
                     .HasForeignKey(d => d.ShowId)

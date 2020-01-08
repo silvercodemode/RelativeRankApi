@@ -2,6 +2,7 @@
 using RelativeRank.Entities;
 using RelativeRank.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RelativeRank.Controllers
@@ -16,7 +17,13 @@ namespace RelativeRank.Controllers
 
         public async Task<ActionResult<IEnumerable<RankedShow>>> GetAllShows()
         {
-            return await _repository.GetAllShows();
+            var rankedShows = await _repository.GetAllShows().ConfigureAwait(false);
+
+            return Ok(rankedShows.Select(show => new RelativeRankedShow
+            {
+                Name = show.Name,
+                PercentileRank = show.PercentileRank
+            }));
         }
     }
 }

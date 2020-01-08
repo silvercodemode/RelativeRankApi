@@ -38,6 +38,12 @@ namespace RelativeRank.Data
                 throw new ArgumentNullException(nameof(rankedShowList));
             }
 
+            var nameToShowTable = new Dictionary<string, RankedShow>();
+            foreach (var show in rankedShowList)
+            {
+                nameToShowTable.Add(show.Name, show);
+            }
+
             var showList = _context.UserToShowMapping.Where(userShow => userShow.UserId == userId)
                 .Join(
                     _context.Show,
@@ -47,48 +53,52 @@ namespace RelativeRank.Data
                     {
                         Name = show.Name,
                         Rank = userShow.Rank,
-                        ShowId = show.Id
+                        ShowId = show.Id,
                     }
                 );
 
-            var usedShowDictionary = new Dictionary<string, UserToShowMapping>();
+            var showNameToIdTable = new Dictionary<string, int>();
+            var showIdToNameTable = new Dictionary<int, string>();
             foreach (var show in showList)
             {
-                if (!usedShowDictionary.ContainsKey(show.Name))
-                {
-                    usedShowDictionary.Add(show.Name, new UserToShowMapping
-                    { 
-                        UserId = userId,
-                        ShowId = show.ShowId,
-                        Rank = show.Rank
-                    });
-                }
+                showNameToIdTable.Add(show.Name, show.ShowId);
+                showIdToNameTable.Add(show.ShowId, show.Name);
             }
 
-            foreach (var submittedShow in rankedShowList)
+            var showsToDelete = _context.UserToShowMapping.Where(userShow => userShow.UserId == userId)
+                .AsEnumerable()
+                .Where(show => !nameToShowTable.ContainsKey(showIdToNameTable[show.ShowId]));
+
+            _context.RemoveRange(showsToDelete);
+
+            foreach (var show in rankedShowList)
             {
-                if (usedShowDictionary.ContainsKey(submittedShow.Name))
+                if (showNameToIdTable.ContainsKey(show.Name))
                 {
                     var showToUpdate = _context.UserToShowMapping
-                        .Where(userShow => userShow.UserId == userId &&
-                            userShow.ShowId == usedShowDictionary[submittedShow.Name].ShowId)
+                        .Where(userShow => showNameToIdTable.ContainsKey(show.Name) &&
+                            userShow.ShowId == showNameToIdTable[show.Name] &&
+                            userShow.UserId == userId)
                         .FirstOrDefault();
 
-                    showToUpdate.Rank = submittedShow.Rank;
+                    showToUpdate.Rank = show.Rank;
+                    showToUpdate.PercentileRank = show.PercentileRank;
                 }
                 else
                 {
                     var newShow = new UserToShowMapping
                     {
                         UserId = userId,
-                        ShowId = _context.Show.Where(show => show.Name == submittedShow.Name).FirstOrDefault().Id,
-                        Rank = submittedShow.Rank
+                        ShowId = _context.Show.Where(s => s.Name == show.Name).First().Id,
+                        Rank = show.Rank,
+                        PercentileRank = show.PercentileRank
                     };
 
                     _context.Add(newShow);
-                    await _context.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return rankedShowList;
         }
