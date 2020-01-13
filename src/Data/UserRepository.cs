@@ -22,7 +22,7 @@ namespace RelativeRank.Data
                 throw new ArgumentNullException(nameof(newUser));
             }
 
-            await _context.User.AddAsync(newUser);
+            await _context.User.AddAsync(newUser).ConfigureAwait(false);
             await _context.SaveChangesAsync().ConfigureAwait(false);
             var savedUser = await GetUserByUsername(newUser.Username).ConfigureAwait(false);
 
@@ -43,14 +43,14 @@ namespace RelativeRank.Data
             return await _context.User.SingleOrDefaultAsync(user => user.Username == username).ConfigureAwait(false);
         }
 
-        public async Task<RankedShowList> GetUsersShows(string username)
+        public async Task<User> DeleteUser(User userToDelete)
         {
-            throw new NotImplementedException();
-        }
+            var user = await _context.User.FindAsync(userToDelete.Id).ConfigureAwait(false);
 
-        public async Task<bool> UpdateUsersShows(User user, RankedShowList updatedList)
-        {
-            throw new NotImplementedException();
+            _context.User.Remove(user);
+            _context.SaveChanges();
+
+            return userToDelete;
         }
     }
 }

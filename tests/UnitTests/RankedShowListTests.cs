@@ -175,6 +175,73 @@ namespace RelativeRankTests.UnitTests
         }
 
         [Fact]
+        public void Remove_WhenPassedNameOfShowInList_SuccessfullyRemovesThatShow()
+        {
+            // Arrange
+            var showList = new RankedShowList();
+            showList.Add(new RankedShow
+            {
+                Name = "show1",
+                Rank = 1
+            });
+
+            var showNameToRemove = "show2";
+            showList.Add(new RankedShow
+            {
+                Name = showNameToRemove,
+                Rank = 2
+            });
+
+            showList.Add(new RankedShow
+            {
+                Name = "show3",
+                Rank = 3
+            });
+
+            // Act
+            showList.Remove(showNameToRemove);
+
+            // Assert
+            Assert.Equal(2, showList.NumberOfShowsInList);
+            Assert.DoesNotContain(new RankedShow { Name = showNameToRemove }, showList.RankedShows);
+        }
+
+        [Fact]
+        public void AfterRemove_WhenPassedNameOfShowInList_SuccessfullyRemovesThatShow()
+        {
+            // Arrange
+            var showList = new RankedShowList();
+            showList.Add(new RankedShow
+            {
+                Name = "show1",
+                Rank = 1
+            });
+
+            var showNameToRemove = "show2";
+            showList.Add(new RankedShow
+            {
+                Name = showNameToRemove,
+                Rank = 2
+            });
+
+            showList.Add(new RankedShow
+            {
+                Name = "show3",
+                Rank = 3
+            });
+
+            // Act
+            showList.Remove(showNameToRemove);
+
+            // Assert
+            for (var i = 0; i < showList.NumberOfShowsInList; i++)
+            {
+                Assert.Equal(i + 1, showList[i].Rank);
+            }
+
+        }
+
+        [Fact]
         public void PassingNullShowEnumerable_ToReplaceAllMethod_ThrowsArgumentNullException()
         {
             // Arrange

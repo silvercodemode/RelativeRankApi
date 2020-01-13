@@ -9,6 +9,9 @@ using System.Security.Claims;
 using RelativeRank.Config;
 using Microsoft.Extensions.Options;
 using RelativeRank.Entities;
+using System.Globalization;
+using System.Resources;
+using System.Reflection;
 
 namespace RelativeRank.Services
 {
@@ -34,7 +37,7 @@ namespace RelativeRank.Services
             _appSettings = appSettings.Value;
         }
 
-        public async Task<Entities.User> GetUserByUsername(string username)
+        public async Task<User?> GetUserByUsername(string username)
         {
             if (string.IsNullOrEmpty(username))
             {
@@ -50,7 +53,7 @@ namespace RelativeRank.Services
             };
         }
 
-        public async Task<Entities.User> Authenticate(LoginModel loginInfo)
+        public async Task<User?> Authenticate(LoginModel loginInfo)
         {
             if (string.IsNullOrEmpty(loginInfo?.Username) || string.IsNullOrEmpty(loginInfo?.Password))
             {
@@ -64,7 +67,7 @@ namespace RelativeRank.Services
                 return null;
             }
 
-            return new Entities.User
+            return new User
             {
                 Id = user.Id,
                 Username = user.Username,
@@ -74,10 +77,29 @@ namespace RelativeRank.Services
 
         public static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
         {
-            if (password == null) throw new ArgumentNullException(nameof(password));
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", nameof(password));
-            if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
-            if (storedSalt.Length != 128) throw new ArgumentException("Invalid length of password salt (128 bytes expected).", "passwordHash");
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentException(
+                    new ResourceManager("RelativeRank.Config.ExceptionMessages", Assembly.GetExecutingAssembly())
+                        .GetString("PasswordCannotBeEmpty", new CultureInfo("en-US")),
+                    nameof(password));
+            }
+
+            if (storedHash?.Length != 64)
+            {
+                throw new ArgumentException(
+                    new ResourceManager("RelativeRank.Config.ExceptionMessages", Assembly.GetExecutingAssembly())
+                        .GetString("InvalidStoredHash", new CultureInfo("en-US")),
+                    nameof(storedHash));
+            }
+
+            if (storedSalt?.Length != 128)
+            {
+                throw new ArgumentException(
+                    new ResourceManager("RelativeRank.Config.ExceptionMessages", Assembly.GetExecutingAssembly())
+                        .GetString("InvalidStoredSalt", new CultureInfo("en-US")),
+                    nameof(storedSalt));
+            }
 
             using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
             {
@@ -93,6 +115,12 @@ namespace RelativeRank.Services
 
         private string CreateJwt(string claim)
         {
+            if (_appSettings?.Secret == null)
+            {
+                throw new Exception(new ResourceManager("RelativeRank.Config.ExceptionMessages",
+                            Assembly.GetExecutingAssembly())
+                                .GetString("AppSettingsSecretIsNull", new CultureInfo("en-US")));
+            }
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -107,7 +135,7 @@ namespace RelativeRank.Services
             return tokenHandler.WriteToken(tokenHandler.CreateToken(tokenDescriptor));
         }
 
-        public async Task<Entities.User> CreateNewUser(SignUpModel newUser)
+        public async Task<User?> CreateNewUser(SignUpModel newUser)
         {
             if (string.IsNullOrEmpty(newUser?.Username) || string.IsNullOrEmpty(newUser?.Password))
             {
@@ -125,9 +153,9 @@ namespace RelativeRank.Services
                 PasswordSalt = passwordSalt
             };
 
-            var createdUser = await _userRepository.CreateNewUser(user);
+            var createdUser = await _userRepository.CreateNewUser(user).ConfigureAwait(false);
 
-            return new Entities.User
+            return new User
             {
                 Id = createdUser.Id,
                 Username = createdUser.Username,
@@ -135,10 +163,41 @@ namespace RelativeRank.Services
             };
         }
 
+        public async Task<User?> DeleteUser(DeleteUserModel userToDelete)
+        {
+            if (string.IsNullOrEmpty(userToDelete?.Username) || string.IsNullOrEmpty(userToDelete?.Password))
+            {
+                return null;
+            }
+
+            var user = await _userRepository.GetUserByUsername(userToDelete.Username).ConfigureAwait(false);
+
+            if (user == null || !VerifyPasswordHash(userToDelete.Password, user.Password, user.PasswordSalt))
+            {
+                return null;
+            }
+
+            var deletedUser = new User
+            {
+                Id = user.Id,
+                Username = user.Username
+            };
+
+            _userShowListRepository.DeleteUsersShowList(deletedUser.Id);
+            await _userRepository.DeleteUser(deletedUser).ConfigureAwait(false);
+
+            return deletedUser;
+        }
+
         public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
-            if (password == null) throw new ArgumentNullException("password");
-            if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                throw new ArgumentException(
+                    new ResourceManager("RelativeRank.Config.ExceptionMessages", Assembly.GetExecutingAssembly())
+                        .GetString("PasswordCannotBeEmpty", new CultureInfo("en-US")),
+                    nameof(password));
+            }
 
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
             {
@@ -154,7 +213,7 @@ namespace RelativeRank.Services
 
         public async Task<RankedShowList> UpdateUsersShowList(int userId, RankedShowList rankedShowList)
         {
-            return await _userShowListRepository.UpdateUsersShowList(userId, rankedShowList).ConfigureAwait(false);
+            return await _userShowListRepository.SetUsersShowList(userId, rankedShowList).ConfigureAwait(false);
         }
     }
 }

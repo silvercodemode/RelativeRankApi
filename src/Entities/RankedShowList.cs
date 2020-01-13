@@ -65,6 +65,17 @@ namespace RelativeRank.Entities
             }
         }
 
+        public void Remove(string showName)
+        {
+            var showToRemove = new RankedShow
+            {
+                Name = showName
+            };
+
+            _backingList.Remove(showToRemove);
+            ReplaceAll(_backingList);
+        }
+
         public void ReplaceAll(IEnumerable<RankedShow> shows)
         {
             if (shows == null)

@@ -8,7 +8,6 @@ namespace RelativeRank.Interfaces
     {
         Task<User> CreateNewUser(RelativeRank.EntityFrameworkEntities.User newUser);
         Task<RelativeRank.EntityFrameworkEntities.User> GetUserByUsername(string username);
-        Task<RankedShowList> GetUsersShows(string username);
-        Task<bool> UpdateUsersShows(User user, RankedShowList updatedList);
+        Task<User> DeleteUser(User userToDelete);
     }
 }

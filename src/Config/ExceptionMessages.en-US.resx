@@ -117,7 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AppSettingsSecretIsNull" xml:space="preserve">
+    <value>App Settings Secret Does not Exist.</value>
+  </data>
+  <data name="InvalidStoredHash" xml:space="preserve">
+    <value>Invalid length of password hash (64 bytes expected).</value>
+  </data>
+  <data name="InvalidStoredSalt" xml:space="preserve">
+    <value>Invalid length of password salt (128 bytes expected).</value>
+  </data>
   <data name="NoTiesInRankedList" xml:space="preserve">
     <value>All shows must have different ranks.</value>
+  </data>
+  <data name="PasswordCannotBeEmpty" xml:space="preserve">
+    <value>Value cannot be empty or whitespace only string.</value>
   </data>
 </root>

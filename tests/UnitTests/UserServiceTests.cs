@@ -7,6 +7,7 @@ using Xunit;
 using RelativeRank.Interfaces;
 using System.Threading.Tasks;
 using RelativeRank.Services;
+using System;
 
 namespace RelativeRankTests.UnitTests
 {
@@ -123,7 +124,6 @@ namespace RelativeRankTests.UnitTests
         {
             // Arrange
             var password = "password";
-            var userService = new UserService(_userRepositoryMock.Object, null, _appSettingsOptions);
 
             // Act
             byte[] passwordHash;
@@ -133,6 +133,46 @@ namespace RelativeRankTests.UnitTests
 
             // Assert
             Assert.True(isValid);
+        }
+
+        [Fact]
+        public void VerifyPasswordHash_WhenPassedEmptyPassword_ThrowsArgumentException()
+        {
+            // Arrange
+            var password = "password";
+            var emptyPassword = "";
+            byte[] passwordHash;
+            byte[] passwordSalt;
+            UserService.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+            // Act and Assert
+            Assert.Throws<ArgumentException>(() => UserService.VerifyPasswordHash(emptyPassword, passwordHash, passwordSalt));
+        }
+
+        [Fact]
+        public void VerifyPasswordHash_WhenPassedEmptyPasswordHash_ThrowsArgumentException()
+        {
+            // Arrange
+            var password = "password";
+            byte[] passwordHash;
+            byte[] passwordSalt;
+            UserService.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+            // Act and Assert
+            Assert.Throws<ArgumentException>(() => UserService.VerifyPasswordHash(password, null, passwordSalt));
+        }
+
+        [Fact]
+        public void VerifyPasswordHash_WhenPassedEmptyPasswordSalt_ThrowsArgumentException()
+        {
+            // Arrange
+            var password = "password";
+            byte[] passwordHash;
+            byte[] passwordSalt;
+            UserService.CreatePasswordHash(password, out passwordHash, out passwordSalt);
+
+            // Act and Assert
+            Assert.Throws<ArgumentException>(() => UserService.VerifyPasswordHash(password, passwordSalt, null));
         }
     }
 }

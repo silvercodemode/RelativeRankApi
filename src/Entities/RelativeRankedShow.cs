@@ -9,5 +9,11 @@ namespace RelativeRank.Entities
     {
         public String Name { get; set; }
         public double PercentileRank { get; set; }
+
+        public RelativeRankedShow(string name, double percentileRank)
+        {
+            Name = name;
+            PercentileRank = percentileRank;
+        }
     }
 }

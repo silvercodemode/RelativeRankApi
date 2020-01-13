@@ -46,15 +46,15 @@ namespace RelativeRank.Controllers
             return Ok(userWithToken);
         }
 
+        [AllowAnonymous]
         [HttpGet("{username}/showlist")]
         public async Task<IActionResult> GetUserShowList(string username)
         {
             var user = await _userService.GetUserByUsername(username).ConfigureAwait(false);
 
-            var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
-            if (!requestHasUserClaim)
+            if (user == null)
             {
-                return BadRequest("Bad credentials.");
+                return BadRequest($"User with username {username} does not exist.");
             }
 
             return Ok(_userService.GetUsersShowList(user.Id));
@@ -79,6 +79,10 @@ namespace RelativeRank.Controllers
             }
 
             var user = await _userService.GetUserByUsername(updateUserShowListModel.Username).ConfigureAwait(false);
+            if (user == null)
+            {
+                return BadRequest($"User with username {updateUserShowListModel.Username} does not exist.");
+            }
 
             var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
             if (!requestHasUserClaim)
@@ -92,31 +96,34 @@ namespace RelativeRank.Controllers
             return Ok(result);
         }
 
-        [HttpGet("claims")]
-        public IActionResult Claims()
+        [HttpDelete("{username}")]
+        public async Task<IActionResult> DeleteUser([FromBody] DeleteUserModel userToDelete)
         {
-            var claims = User.Claims.ToList();
-            var res = "";
-
-            foreach (var claim in claims)
+            if (userToDelete == null)
             {
-                res += $"{claim}\n";
+                throw new ArgumentNullException(nameof(userToDelete));
             }
 
-            return Ok(res);
-        }
-
-        [HttpGet("{username}")]
-        public async Task<IActionResult> UserDetails(string username)
-        {
-            var user = await _userService.GetUserByUsername(username).ConfigureAwait(false);
-            
+            var user = await _userService.GetUserByUsername(userToDelete.Username).ConfigureAwait(false);
             if (user == null)
             {
-                return BadRequest($"User with username: {username} does not exist.");
+                return BadRequest($"User with username {userToDelete.Username} does not exist.");
             }
 
-            return Ok($"Hi {username}");
+            var requestHasUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == $"{user.Id}").ToList().Count > 0;
+            if (!requestHasUserClaim)
+            {
+                return BadRequest($"You do not have permissions to delete {userToDelete.Username}'s showlist.");
+            }
+
+            var deletedUser = await _userService.DeleteUser(userToDelete).ConfigureAwait(false);
+            
+            if (deletedUser == null)
+            {
+                return BadRequest($"Failed to delete User with username: {userToDelete.Username} or user does not exist.");
+            }
+
+            return Ok(deletedUser);
         }
     }
 }

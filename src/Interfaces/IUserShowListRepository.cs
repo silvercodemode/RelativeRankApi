@@ -6,6 +6,7 @@ namespace RelativeRank.Interfaces
     public interface IUserShowListRepository
     {
         RankedShowList GetUsersShowList(int userId);
-        Task<RankedShowList> UpdateUsersShowList(int userId, RankedShowList rankedShowList);
+        Task<RankedShowList> SetUsersShowList(int userId, RankedShowList rankedShowList);
+        void DeleteUsersShowList(int userId);
     }
 }

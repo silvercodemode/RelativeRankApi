@@ -31,7 +31,7 @@ namespace RelativeRank.Data
             return new RankedShowList(showList);
         }
 
-        public async Task<RankedShowList> UpdateUsersShowList(int userId, RankedShowList rankedShowList)
+        public async Task<RankedShowList> SetUsersShowList(int userId, RankedShowList rankedShowList)
         {
             if (rankedShowList == null)
             {
@@ -101,6 +101,14 @@ namespace RelativeRank.Data
             await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return rankedShowList;
+        }
+
+        public void DeleteUsersShowList(int userId)
+        {
+            var userToShowMappingsToDelete = _context.UserToShowMapping.Where(userShow => userShow.UserId == userId);
+
+            _context.RemoveRange(userToShowMappingsToDelete);
+            _context.SaveChanges();
         }
     }
 }
