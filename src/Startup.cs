@@ -79,6 +79,11 @@ namespace RelativeRank
 
             app.UseAuthorization();
 
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins("https://localhost:3000", "http://localhost:3000");
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
