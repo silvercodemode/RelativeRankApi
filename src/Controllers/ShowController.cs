@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using RelativeRank.DataTransferObjects;
 using RelativeRank.Entities;
@@ -12,7 +11,6 @@ namespace RelativeRank.Controllers
 {
     [ApiController]
     [Authorize]
-    [EnableCors]
     public class ShowController : ControllerBase
     {
         private readonly IShowRepository _repository;

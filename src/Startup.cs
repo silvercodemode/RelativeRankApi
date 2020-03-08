@@ -81,7 +81,13 @@ namespace RelativeRank
 
             app.UseCors(builder =>
             {
-                builder.WithOrigins("https://localhost:3000", "http://localhost:3000");
+                builder.WithOrigins(
+                    "https://localhost:3000",
+                    "http://localhost:3000",
+                    "localhost:3000"
+                )
+                .AllowAnyMethod()
+                .AllowAnyHeader();
             });
 
             app.UseEndpoints(endpoints =>
