@@ -91,5 +91,13 @@ namespace RelativeRank.Data
 
             return true;
         }
+
+        public IEnumerable<Entities.Show> Search(string searchTerm)
+        {
+            return _context.Show
+                .Where(show => show.Name.ToLower().Contains(searchTerm.ToLower()))
+                .Select(showEntity => new Entities.Show(showEntity.Name))
+                .Take(5);
+        }
     }
 }

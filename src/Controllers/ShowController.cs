@@ -32,6 +32,13 @@ namespace RelativeRank.Controllers
         [HttpGet("/show/all-shows")]
         public ActionResult<IEnumerable<Show>> GetAllShows() => Ok(_repository.GetAllShows());
 
+        [AllowAnonymous]
+        [HttpGet("/show/search")]
+        public ActionResult<IEnumerable<Show>> Search([FromQuery(Name ="search-term")] string searchTerm)
+        {
+            return Ok(_repository.Search(searchTerm));
+        }
+
         [HttpPost("/show/add-show")]
         public async Task<ActionResult<string>> AddShow(AddShowModel show)
         {

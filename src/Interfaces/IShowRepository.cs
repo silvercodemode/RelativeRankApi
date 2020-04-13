@@ -10,6 +10,7 @@ namespace RelativeRank.Interfaces
     {
         Task<List<RankedShow>> GetAllShowsRelativelyRanked();
         IEnumerable<Entities.Show> GetAllShows();
+        IEnumerable<Entities.Show> Search(string searchTerm);
         Task<bool> AddShow(AddShowModel show);
         Task<bool> DeleteShow(int showId);
     }
