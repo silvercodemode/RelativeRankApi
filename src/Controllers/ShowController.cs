@@ -19,6 +19,13 @@ namespace RelativeRank.Controllers
 
         [AllowAnonymous]
         [HttpGet("/")]
+        public async Task<ActionResult<IEnumerable<RankedShow>>> TestEndpoint()
+        {
+            return Ok("it work");
+        }
+
+        [AllowAnonymous]
+        [HttpGet("/index")]
         public async Task<ActionResult<IEnumerable<RankedShow>>> GetAllShowsRelativelyRanked()
         {
             var rankedShows = await _repository.GetAllShowsRelativelyRanked().ConfigureAwait(false);

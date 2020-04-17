@@ -33,7 +33,7 @@ namespace RelativeRank
             services.Configure<AppSettings>(appSettingsSection);
 
             services.AddDbContext<RelativeRankContext>(options => {
-                options.UseNpgsql(Configuration.GetConnectionString("postgres"));
+                options.UseNpgsql(Configuration.GetConnectionString("prod"));
             });
 
             services.AddAuthentication(options =>
