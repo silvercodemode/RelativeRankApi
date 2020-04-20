@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using RelativeRank.Config;
 using RelativeRank.DataTransferObjects;
 using RelativeRank.Entities;
 using RelativeRank.Interfaces;
@@ -15,16 +17,20 @@ namespace RelativeRank.Controllers
     {
         private readonly IShowRepository _repository;
 
-        public ShowController(IShowRepository repository) => _repository = repository;
+        public ShowController(IShowRepository repository)
+        {
+            _repository = repository;
+        }
 
         [AllowAnonymous]
-        [HttpGet("/")]
+        [HttpGet("/test")]
         public async Task<ActionResult<IEnumerable<RankedShow>>> TestEndpoint()
         {
             return Ok("it work");
         }
 
         [AllowAnonymous]
+        [HttpGet("/")]
         [HttpGet("/index")]
         public async Task<ActionResult<IEnumerable<RankedShow>>> GetAllShowsRelativelyRanked()
         {

@@ -32,6 +32,9 @@ namespace RelativeRank
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
 
+            var p = Configuration.GetConnectionString("prod");
+            var a = appSettingsSection.Get<AppSettings>().Secret;
+
             services.AddDbContext<RelativeRankContext>(options => {
                 options.UseNpgsql(Configuration.GetConnectionString("prod"));
             });
