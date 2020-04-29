@@ -32,13 +32,15 @@ namespace RelativeRank.Controllers
         [AllowAnonymous]
         [HttpGet("/")]
         [HttpGet("/index")]
-        public async Task<ActionResult<IEnumerable<RankedShow>>> GetAllShowsRelativelyRanked()
+        public async Task<ActionResult<PagedResult<RelativeRankedShow>>> GetAllShowsRelativelyRanked()
         {
-            var rankedShows = await _repository.GetAllShowsRelativelyRanked().ConfigureAwait(false);
+            var page = HttpContext.Request.Query["page"].ToString();
+            var pageNumber = string.IsNullOrEmpty(page) ? 1 : int.Parse(page);
 
-            return Ok(rankedShows
-                .Select(show => new RelativeRankedShow(show.Name, show.PercentileRank))
-                .OrderByDescending(show => show.PercentileRank));
+            var pageSize = HttpContext.Request.Query["page-size"].ToString();
+            var pageSizeNumber = string.IsNullOrEmpty(pageSize) ? 100 : int.Parse(pageSize);
+
+            return await _repository.GetAllShowsRelativelyRanked(pageNumber, pageSizeNumber).ConfigureAwait(false);
         }
 
         [AllowAnonymous]

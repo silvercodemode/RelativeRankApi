@@ -21,7 +21,7 @@ namespace RelativeRank.Data
             _userShowListRepository = userShowListRepository;
         }
 
-        public async Task<List<RankedShow>> GetAllShowsRelativelyRanked()
+        public async Task<PagedResult<RelativeRankedShow>> GetAllShowsRelativelyRanked(int page, int pageSize)
         {
             var allShows = _context.UserToShowMapping
                 .Join(
@@ -39,9 +39,24 @@ namespace RelativeRank.Data
                 {
                     Name = rankedShow.Key,
                     PercentileRank = rankedShow.Average(show => show.PercentileRank)
-                });
+                })
+                .OrderByDescending(show => show.PercentileRank);
 
-            return await allShows.ToListAsync().ConfigureAwait(false);
+            var numberOfShows = allShows.Count();
+
+            var pagedShows = await allShows
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+
+            return new PagedResult<RelativeRankedShow>
+            {
+                Page = page,
+                PageSize = pageSize,
+                NumberOfPages = (numberOfShows - 1) / pageSize + 1,
+                Results = pagedShows.Select(s => new RelativeRankedShow(s.Name, s.PercentileRank))
+            };
         }
 
         public IEnumerable<Entities.Show> GetAllShows() =>_context.Show.Select(show => new Entities.Show(show.Name));

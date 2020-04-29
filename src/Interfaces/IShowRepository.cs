@@ -8,7 +8,7 @@ namespace RelativeRank.Interfaces
 {
     public interface IShowRepository
     {
-        Task<List<RankedShow>> GetAllShowsRelativelyRanked();
+        Task<PagedResult<RelativeRankedShow>> GetAllShowsRelativelyRanked(int page, int pageSize);
         IEnumerable<Entities.Show> GetAllShows();
         IEnumerable<Entities.Show> Search(string searchTerm);
         Task<bool> AddShow(AddShowModel show);
