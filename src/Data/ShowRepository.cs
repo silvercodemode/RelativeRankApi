@@ -111,6 +111,10 @@ namespace RelativeRank.Data
         {
             return _context.Show
                 .Where(show => show.Name.ToLower().Contains(searchTerm.ToLower()))
+                .Take(25)
+                .ToList()
+                .Select(show => new { Name = show.Name, Closeness = Math.Abs(searchTerm.Length - show.Name.Length) })
+                .OrderBy(show => show.Closeness)
                 .Select(showEntity => new Entities.Show(showEntity.Name))
                 .Take(5);
         }
