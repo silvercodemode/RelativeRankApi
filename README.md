@@ -1,4 +1,13 @@
-## Relative Rank
-The idea of this project is to have a global ranking that is based entirely off of the relative rankings of shows. It's based on the assumption that it is easier to say that you like one show more than another than it is to assign a number in the 1-10 range to a show. So it will use each users strictly enforced sequential lists to map global scores to shows. I haven't worked out the exact specifics yet but what i've mentioned is the general idea.
+# RelativeRank
 
-This repo is just for the api I plan on having the frontend in a separate repo.
+Backend for [relativerank.com](https://relativerank.com/)
+
+The point of this project is to solve the issue of people having different numerical systems
+for how they rank shows. One persons 7 could be another persons 6 for example.
+
+What this system does is force people to maintain a sequential of shows ranked strictly from
+most liked to least liked, and then maps a score in between 0 and 1 to each show based on its
+position in that list. Those scores calculated from this sequencial ranking are then averaged
+to get an overall ranking for a show.
+
+I'm using anime because I like anime, but this system could be aplied to ranking anything that can be ranked ordinally.
