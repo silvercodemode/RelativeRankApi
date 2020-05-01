@@ -13,5 +13,6 @@ namespace RelativeRank.Interfaces
         IEnumerable<Entities.Show> Search(string searchTerm);
         Task<bool> AddShow(AddShowModel show);
         Task<bool> DeleteShow(int showId);
+        HashSet<string> FilterSetToShowNamesThatExist(HashSet<string> names);
     }
 }

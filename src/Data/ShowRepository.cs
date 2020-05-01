@@ -118,5 +118,12 @@ namespace RelativeRank.Data
                 .Select(showEntity => new Entities.Show(showEntity.Name))
                 .Take(5);
         }
+
+        public HashSet<string> FilterSetToShowNamesThatExist(HashSet<string> names)
+        {
+            return _context.Show.Where(s => names.Contains(s.Name))
+                .Select(show => show.Name)
+                .ToHashSet();
+        }
     }
 }

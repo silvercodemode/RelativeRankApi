@@ -62,6 +62,8 @@ namespace RelativeRank
             services.AddScoped(typeof(IUserService), typeof(UserService));
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
             services.AddScoped(typeof(IUserShowListRepository), typeof(UserShowListRepository));
+
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
