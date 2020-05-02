@@ -30,7 +30,7 @@ namespace RelativeRank.Controllers
         [HttpGet("/import-from-mal")]
         public async Task<IActionResult> ImportFromMal(string username)
         {
-            using (var request = new HttpRequestMessage(HttpMethod.Get, $"https://myanimelist.net/animelist/{username}"))
+            using (var request = new HttpRequestMessage(HttpMethod.Get, $"https://myanimelist.net/animelist/{username}?status=7"))
             using (var httpClient = _httpClientFactory.CreateClient())
             using(var response = await httpClient.SendAsync(request).ConfigureAwait(false))
             {
@@ -40,7 +40,7 @@ namespace RelativeRank.Controllers
                 var showNameRegex = new Regex("(?<=&quot;anime_title&quot;:&quot;)[^\\{\\}]*(?=&quot;,&quot;anime_num)");
                 var malRatingRegex = new Regex("(?<=&quot;score&quot;\\:)\\d+(?=,&quot;)");
 
-                var dataString = showDataSectionRegex.Matches(usersMalAnimeListPageHtml)[0].Value;
+                var dataString = showDataSectionRegex.Match(usersMalAnimeListPageHtml).Value;
 
                 var shows = new List<RankedShow>();
                 var showNameSet = new HashSet<string>();
