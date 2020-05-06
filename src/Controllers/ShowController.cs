@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace RelativeRank.Controllers
 {
@@ -28,46 +29,53 @@ namespace RelativeRank.Controllers
 
         [AllowAnonymous]
         [HttpGet("/import-from-mal")]
-        public async Task<IActionResult> ImportFromMal(string username)
+        public async Task<IActionResult> ImportFromMalV2(string username)
         {
-            using (var request = new HttpRequestMessage(HttpMethod.Get, $"https://myanimelist.net/animelist/{username}?status=7"))
-            using (var httpClient = _httpClientFactory.CreateClient())
-            using(var response = await httpClient.SendAsync(request).ConfigureAwait(false))
+            var resultsLength = 0;
+            var offset = 0;
+            var shows = new List<RankedShow>();
+            var showNameSet = new HashSet<string>();
+
+            do
             {
-                var usersMalAnimeListPageHtml = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                var showDataSectionRegex = new Regex("(?<=data-items=).*(?=\\}\\]\">)");
-                var showNameRegex = new Regex("(?<=&quot;anime_title&quot;:&quot;)[^\\{\\}]*(?=&quot;,&quot;anime_num)");
-                var malRatingRegex = new Regex("(?<=&quot;score&quot;\\:)\\d+(?=,&quot;)");
-
-                var dataString = showDataSectionRegex.Match(usersMalAnimeListPageHtml).Value;
-
-                var shows = new List<RankedShow>();
-                var showNameSet = new HashSet<string>();
-
-                foreach (var showData in dataString.Split("},{"))
+                using (var request = new HttpRequestMessage(HttpMethod.Get, $"https://myanimelist.net/animelist/{username}/load.json?offset={offset}status=2"))
+                using (var httpClient = _httpClientFactory.CreateClient())
+                using (var response = await httpClient.SendAsync(request).ConfigureAwait(false))
                 {
-                    var name = showNameRegex.Match(showData).Value;
-                    var malRating = malRatingRegex.Match(showData).Value;
+                    var usersMalAnimeListPageJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var parsedJson = JArray.Parse(usersMalAnimeListPageJson);
 
-                    if (!string.IsNullOrEmpty(name))
+                    foreach (var showJson in parsedJson)
                     {
-                        shows.Add(new RankedShow { Name = name, Rank = int.Parse(malRating) });
-                        showNameSet.Add(name);
+                        var showTitle = showJson.SelectToken("anime_title").Value<string>();
+                        var showRank = showJson.SelectToken("score").Value<string>();
+
+                        shows.Add(new RankedShow
+                        {
+                            Name = showTitle,
+                            Rank = int.Parse(showRank)
+                        });
+
+                        showNameSet.Add(showTitle);
                     }
+
+                    resultsLength = parsedJson.Count;
                 }
 
-                var showsThatExistInDb = _repository.FilterSetToShowNamesThatExist(showNameSet);
-
-                return Ok(new RankedShowList(shows
-                    .Where(show => showsThatExistInDb.Contains(show.Name))
-                    .OrderByDescending(show => show.Rank)
-                    .Select((show, index) => new RankedShow
-                    {
-                        Name = show.Name,
-                        Rank = index + 1
-                    })));
+                offset += 300;
             }
+            while (resultsLength > 0);
+
+            var showsThatExistInDb = _repository.FilterSetToShowNamesThatExist(showNameSet);
+
+            return Ok(new RankedShowList(shows
+                .Where(show => showsThatExistInDb.Contains(show.Name))
+                .OrderByDescending(show => show.Rank)
+                .Select((show, index) => new RankedShow
+                {
+                    Name = show.Name,
+                    Rank = index + 1
+                })));
         }
 
         [AllowAnonymous]
