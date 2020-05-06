@@ -48,15 +48,19 @@ namespace RelativeRank.Controllers
                     foreach (var showJson in parsedJson)
                     {
                         var showTitle = showJson.SelectToken("anime_title").Value<string>();
-                        var showRank = showJson.SelectToken("score").Value<string>();
+                        var showRank = showJson.SelectToken("score").Value<int>();
+                        var watchingStatus = showJson.SelectToken("status").Value<int>();
 
-                        shows.Add(new RankedShow
+                        if (watchingStatus == 2 || showRank != 0)
                         {
-                            Name = showTitle,
-                            Rank = int.Parse(showRank)
-                        });
+                            shows.Add(new RankedShow
+                            {
+                                Name = showTitle,
+                                Rank = showRank
+                            });
 
-                        showNameSet.Add(showTitle);
+                            showNameSet.Add(showTitle);
+                        }
                     }
 
                     resultsLength = parsedJson.Count;
