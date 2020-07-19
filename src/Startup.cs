@@ -89,7 +89,10 @@ namespace RelativeRank
                 builder.WithOrigins(
                     "https://localhost:3000",
                     "http://localhost:3000",
-                    "localhost:3000"
+                    "http://relative-rank-frontend.martinpayne73.vercel.app",
+                    "https://relative-rank-frontend.martinpayne73.vercel.app",
+                    "http://relativerank.com",
+                    "https://relativerank.com"
                 )
                 .AllowAnyMethod()
                 .AllowAnyHeader();
