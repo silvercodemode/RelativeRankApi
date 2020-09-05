@@ -96,6 +96,24 @@ namespace RelativeRank.Controllers
             return Ok(result);
         }
 
+        [HttpPost("update")]
+        public async Task<IActionResult> AdmimUpdateUser([FromBody] AdminUpdateUserModel updateUserModel)
+        {
+            var requestHasAdminUserClaim = User.Claims.Where(claim => claim.Type == "user" && claim.Value == "1").ToList().Count > 0;
+            if (!requestHasAdminUserClaim)
+            {
+                return BadRequest($"You do not have permissions update users.");
+            }
+
+            var updatedUser = await _userService.UpdateUser(updateUserModel).ConfigureAwait(false);
+            if (updatedUser == null)
+            {
+                return BadRequest(new { message = "Update failed." });
+            }
+
+            return Ok(updatedUser);
+        }
+
         [HttpDelete("{username}")]
         public async Task<IActionResult> DeleteUser([FromBody] DeleteUserModel userToDelete)
         {

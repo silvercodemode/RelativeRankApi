@@ -163,6 +163,41 @@ namespace RelativeRank.Services
             };
         }
 
+        public async Task<User?> UpdateUser(AdminUpdateUserModel updateUserModel)
+        {
+            if (string.IsNullOrEmpty(updateUserModel?.UserToUpdateCurrentUsername) ||
+                string.IsNullOrEmpty(updateUserModel?.UserToUpdateNewUsername) ||
+                string.IsNullOrEmpty(updateUserModel?.UserToUpdateNewPassword))
+            {
+                return null;
+            }
+
+            byte[] hashedPassword;
+            byte[] passwordSalt;
+            CreatePasswordHash(updateUserModel.UserToUpdateNewPassword, out hashedPassword, out passwordSalt);
+
+            var dbUpdateUserModel = new DbUpdateUserModel
+            {
+                UserToUpdateCurrentUsername = updateUserModel.UserToUpdateCurrentUsername,
+                UserToUpdateNewUsername = updateUserModel.UserToUpdateNewUsername,
+                Password = hashedPassword,
+                PasswordSalt = passwordSalt
+            };
+
+            var createdUser = await _userRepository.UpdateUser(dbUpdateUserModel).ConfigureAwait(false);
+            if (createdUser == null)
+            {
+                return null;
+            }
+
+            return new User
+            {
+                Id = createdUser.Id,
+                Username = createdUser.Username,
+                Token = CreateJwt($"{createdUser.Id}")
+            };
+        }
+
         public async Task<User?> DeleteUser(DeleteUserModel userToDelete)
         {
             if (string.IsNullOrEmpty(userToDelete?.Username) || string.IsNullOrEmpty(userToDelete?.Password))

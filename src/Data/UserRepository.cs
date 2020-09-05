@@ -33,6 +33,44 @@ namespace RelativeRank.Data
             };
         }
 
+        public async Task<User?> UpdateUser(DbUpdateUserModel updateUserModel)
+        {
+            if (updateUserModel == null ||
+                updateUserModel.UserToUpdateCurrentUsername == null ||
+                updateUserModel.UserToUpdateNewUsername == null ||
+                updateUserModel.Password == null ||
+                updateUserModel.PasswordSalt == null)
+            {
+                throw new ArgumentNullException(nameof(updateUserModel));
+            }
+
+            EntityFrameworkEntities.User existingUser;
+            try
+            {
+                 existingUser = await _context.User
+                    .SingleAsync(u => u.Username == updateUserModel.UserToUpdateCurrentUsername).ConfigureAwait(false);
+            }
+            catch
+            {
+                return null;
+            }
+
+            existingUser.Username = updateUserModel.UserToUpdateNewUsername;
+            existingUser.Password = updateUserModel.Password;
+            existingUser.PasswordSalt = updateUserModel.PasswordSalt;
+            _context.Update(existingUser);
+
+            await _context.SaveChangesAsync().ConfigureAwait(false);
+
+            var updatedUser = await GetUserByUsername(existingUser.Username).ConfigureAwait(false);
+
+            return new User
+            {
+                Id = updatedUser.Id,
+                Username = updatedUser.Username
+            };
+        }
+
         public async Task<EntityFrameworkEntities.User> GetUserByUsername(string username)
         {
             if (username == null)
