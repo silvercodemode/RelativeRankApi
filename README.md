@@ -1,7 +1,5 @@
 # RelativeRank
 
-Backend for [relativerank.com](https://relativerank.com/)
-
 The point of this project is to solve the issue of people having different numerical systems
 for how they rank shows. One persons 7 could be another persons 6 for example.
 
